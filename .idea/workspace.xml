@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="6d650d98-dba0-46fc-b349-06e80b99b815" name="Default Changelist" comment="" />
+    <list default="true" id="6d650d98-dba0-46fc-b349-06e80b99b815" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Constellation.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Processor.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/processed.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sky1.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -37,15 +45,16 @@
     <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/img" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/img" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
-    </key>
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/img" />
     </key>
   </component>
   <component name="RunManager">
@@ -90,29 +99,29 @@
     <servers />
   </component>
   <component name="WindowStateProjectService">
-    <state width="1897" height="272" key="GridCell.Tab.0.bottom" timestamp="1581886584137">
+    <state width="1897" height="272" key="GridCell.Tab.0.bottom" timestamp="1581888270001">
       <screen x="0" y="0" width="1920" height="1035" />
     </state>
-    <state width="1897" height="272" key="GridCell.Tab.0.bottom/0.0.1920.1035@0.0.1920.1035" timestamp="1581886584137" />
-    <state width="1897" height="272" key="GridCell.Tab.0.center" timestamp="1581886584137">
+    <state width="1897" height="272" key="GridCell.Tab.0.bottom/0.0.1920.1035@0.0.1920.1035" timestamp="1581888270001" />
+    <state width="1897" height="272" key="GridCell.Tab.0.center" timestamp="1581888270000">
       <screen x="0" y="0" width="1920" height="1035" />
     </state>
-    <state width="1897" height="272" key="GridCell.Tab.0.center/0.0.1920.1035@0.0.1920.1035" timestamp="1581886584137" />
-    <state width="1897" height="272" key="GridCell.Tab.0.left" timestamp="1581886584136">
+    <state width="1897" height="272" key="GridCell.Tab.0.center/0.0.1920.1035@0.0.1920.1035" timestamp="1581888270000" />
+    <state width="1897" height="272" key="GridCell.Tab.0.left" timestamp="1581888269999">
       <screen x="0" y="0" width="1920" height="1035" />
     </state>
-    <state width="1897" height="272" key="GridCell.Tab.0.left/0.0.1920.1035@0.0.1920.1035" timestamp="1581886584136" />
-    <state width="1897" height="272" key="GridCell.Tab.0.right" timestamp="1581886584137">
+    <state width="1897" height="272" key="GridCell.Tab.0.left/0.0.1920.1035@0.0.1920.1035" timestamp="1581888269999" />
+    <state width="1897" height="272" key="GridCell.Tab.0.right" timestamp="1581888270000">
       <screen x="0" y="0" width="1920" height="1035" />
     </state>
-    <state width="1897" height="272" key="GridCell.Tab.0.right/0.0.1920.1035@0.0.1920.1035" timestamp="1581886584137" />
+    <state width="1897" height="272" key="GridCell.Tab.0.right/0.0.1920.1035@0.0.1920.1035" timestamp="1581888270000" />
     <state x="461" y="153" key="SettingsEditor" timestamp="1581882387188">
       <screen x="0" y="0" width="1920" height="1035" />
     </state>
     <state x="461" y="153" key="SettingsEditor/0.0.1920.1035@0.0.1920.1035" timestamp="1581882387188" />
-    <state x="646" y="346" key="com.intellij.ide.util.TipDialog" timestamp="1581882362159">
+    <state x="646" y="346" key="com.intellij.ide.util.TipDialog" timestamp="1581888147887">
       <screen x="0" y="0" width="1920" height="1035" />
     </state>
-    <state x="646" y="346" key="com.intellij.ide.util.TipDialog/0.0.1920.1035@0.0.1920.1035" timestamp="1581882362159" />
+    <state x="646" y="346" key="com.intellij.ide.util.TipDialog/0.0.1920.1035@0.0.1920.1035" timestamp="1581888147887" />
   </component>
 </project>
