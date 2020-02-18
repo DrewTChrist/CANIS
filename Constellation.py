@@ -37,7 +37,10 @@ class GraphBuilder:
         plt.margins(0, 0)
         plt.imshow(self.img)
         nx.draw_networkx(self.G, pos=layout, node_size=0, edge_color=color)
-        plt.show()
+
         if save_fig:
             now = datetime.now()
             plt.savefig('saved_figures/constellation-' + now.strftime("%d%m%Y%H%M%S") + '.jpg', bbox_inches='tight', pad_inches=0)
+
+        plt.show()
+
