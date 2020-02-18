@@ -1,4 +1,5 @@
 # Build a graph of nodes given a list of vertices and a source image.
+from datetime import datetime
 import matplotlib.pyplot as plt
 import networkx as nx
 
@@ -38,4 +39,5 @@ class GraphBuilder:
         nx.draw_networkx(self.G, pos=layout, node_size=0, edge_color=color)
         plt.show()
         if save_fig:
-            plt.savefig('constellation.jpg', bbox_inches='tight', pad_inches=0)
+            now = datetime.now()
+            plt.savefig('saved_figures/constellation-' + now.strftime("%d%m%Y%H%M%S") + '.jpg', bbox_inches='tight', pad_inches=0)
