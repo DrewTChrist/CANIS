@@ -2,5 +2,7 @@
 .vscode
 __pycache__
 output/*
+!output/.gitkeep
 saved_figures/*
+!saved_figures/.gitkeep
 venv
