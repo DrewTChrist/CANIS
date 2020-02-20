@@ -1,17 +1,19 @@
-'''
-KnowledgeExtractor class will be used to extract
-meaningful information from images that can be
-stored in a "knowledgebase" for the system.
-'''
+"""
+KnowledgeExtractor class will be used to extract meaningful information from images that can be stored in a
+"knowledge-base" for the system.
+"""
 
+# TODO: More thinning of contours
+# TODO: Perhaps convert the contours to vertices
+# TODO: Function that adds a white background to images with an alpha layer
 
 import cv2 as cv
-import numpy as np
 from datetime import datetime
 from enum import Enum
 
+
 class KnowledgeExtractor:
-    
+
     def __init__(self, path, threshold=235, maximum=255):
         self.path = path
         self.image = cv.imread(self.path)
@@ -34,8 +36,7 @@ class KnowledgeExtractor:
     def thin_contours(self):
         self.contours = max(self.contours, key=len)
 
-    # Saves either the threshold image or
-    # the original image with the contours
+    # Saves either the threshold image or the original image with the contours
     def save_image(self, image_type):
         if image_type == self.ImageType.THRESHOLD:
             cv.imwrite(datetime.now().strftime("%d%m%Y%H%M%S") + '.png', self.threshold)
@@ -47,13 +48,7 @@ class KnowledgeExtractor:
     def get_image_with_contours(self):
         return cv.drawContours(self.image, self.contours, -1, (0, 255, 0), 1)
 
-    # Enum for saving images        
+    # Enum for saving images
     class ImageType(Enum):
         THRESHOLD = 1
         CONTOUR = 2
-
-# TODO: More thinning of contours
-# TODO: Perhaps convert the contours to vertices
-# TODO: Function that adds a white background to images with an alpha layer
-
-
