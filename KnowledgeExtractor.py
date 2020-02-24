@@ -33,6 +33,7 @@ class KnowledgeExtractor:
         cv.waitKey(0)
 
     # Removes all edge arrays except the largest one
+    # This is a temporary solution
     def thin_contours(self):
         self.contours = max(self.contours, key=len)
 
