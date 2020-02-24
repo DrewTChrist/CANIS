@@ -11,7 +11,8 @@ class GraphBuilder:
         self.vertex_nodes = {}
         count = 1
 
-        # Convert the array of vertices to a dictionary of nodes that networkx can understand
+        # Convert the array of vertices to a dictionary of nodes that
+        # networkx can understand
         for vertex in vertices:
             self.vertex_nodes[str(count)] = [vertex[0], vertex[1]]
             count += 1
@@ -32,12 +33,13 @@ class GraphBuilder:
         plt.figure(1, figsize=(15, 15))
         plt.axis([0, self.img.width, 0, self.img.height])
 
-        # Important to invert the y axis since the vertex coordinates came from an image, and image coordinates have
-        # their origin in the top left rather than the bottom left
+        # Important to invert the y axis since the vertex coordinates came
+        # from an image, and image coordinates have their origin in the top
+        # left rather than the bottom left
         plt.gca().invert_yaxis()
         plt.margins(0, 0)
         plt.imshow(self.img)
-        nx.draw_networkx(self.G, pos=layout, node_size=0, edge_color=color)
+        nx.draw_networkx(self.G, pos=layout, with_labels=False, node_size=0, edge_color=color)
 
         if save_fig:
             now = datetime.now()
