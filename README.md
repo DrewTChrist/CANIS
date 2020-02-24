@@ -1,1 +1,1 @@
-# placeholder-CC
+# CANIS: Constellation and Name Invention System
