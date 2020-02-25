@@ -1,4 +1,4 @@
-from KnowledgeExtractor import KnowledgeExtractor
+from knowledge_extractor import KnowledgeExtractor
 
 path = ''
 

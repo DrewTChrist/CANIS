@@ -1,6 +1,6 @@
 """Process an image and extract star vertices."""
 import numpy as np
-from Geometry import distance
+from geometry import distance
 from PIL import Image
 
 
