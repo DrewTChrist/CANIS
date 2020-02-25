@@ -1,6 +1,5 @@
-"""
-KnowledgeExtractor class will be used to extract meaningful information from images that can be stored in a
-"knowledge-base" for the system.
+"""KnowledgeExtractor class will be used to extract meaningful information from 
+images that can be stored in a "knowledge-base" for the system.
 """
 
 # TODO: More thinning of contours
