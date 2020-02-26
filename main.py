@@ -8,14 +8,18 @@ from processor import ImageProcessor
 # image_name accordingly
 image_name = 'sky1.jpg'
 
+# Open and process a new image
 ip = ImageProcessor(os.path.join(os.path.curdir, "./img/" + image_name))
 original = ip.img
 ip.process()
 
-nodes = ip.extract_vertices()
+# Extract vertices and convert them to a node dictionary
+node_dictionary = ip.extract_vertices()
 
-new_pattern = Generator(nodes).generate_pattern()
+# Generate a new pattern specifying the number of edges and minimum fitness
+new_pattern = Generator(node_dictionary, num_edges=10).generate_pattern(min_fitness=63)
 
-constellation = GraphBuilder(original, nodes)
+# Build and plot the pattern over the original image
+constellation = GraphBuilder(original, node_dictionary)
 constellation.add_edges(new_pattern)
-constellation.visualize(color='r', save_fig=False)
+constellation.visualize(color='w', save_fig=False)

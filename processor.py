@@ -1,5 +1,6 @@
 """Process an image and extract star vertices."""
 import numpy as np
+from datetime import datetime
 from geometry import distance
 from PIL import Image
 
@@ -9,6 +10,9 @@ class ImageProcessor:
     def __init__(self, img, threshold=200):
         # A path to the image to process
         self.img = Image.open(img)
+
+        # A dictionary of labelled nodes
+        self.nodes = {}
 
         # Determines the threshold for discarding stars during image
         # processing. Value must be between 0 and 255, higher values mean
@@ -26,10 +30,13 @@ class ImageProcessor:
         # For each pixel, if the brightness value is below the brightness
         # threshold then set the pixel to black, otherwise set the pixel to
         # white
-        self.img = self.img.point(lambda x: 0 if x < self.threshold else 255, '1')
+        self.img = self.img.point(lambda x: 0 if x < self.threshold else 255,
+                                  '1')
 
+        # Optionally save the processed image
         if save_processed_img:
-            self.img.save('processed.jpg')
+            now = datetime.now()
+            self.img.save('saved_figures/processed-' + now.strftime("%d%m%Y%H%M%S") + '.jpg')
 
     def extract_vertices(self):
         # Extract vertices from the image by searching for white pixels. If
@@ -41,17 +48,31 @@ class ImageProcessor:
                     # Get the indices of all vertices that fall within |x| <
                     # 5 or |y| < 5
                     duplicates = np.where(np.logical_or(
-                        np.logical_and(self.vertices[:, 0] < x + 5, self.vertices[:, 0] > x - 5),
-                        np.logical_and(self.vertices[:, 1] < y + 5, self.vertices[:, 1] > y - 5)))
+                        np.logical_and(self.vertices[:, 0] < x + 5,
+                                       self.vertices[:, 0] > x - 5),
+                        np.logical_and(self.vertices[:, 1] < y + 5,
+                                       self.vertices[:, 1] > y - 5)))
                     if len(self.vertices) == 0:
-                        self.vertices = np.concatenate((self.vertices, [[x, y]]), axis=0)
+                        self.vertices = np.concatenate(
+                            (self.vertices, [[x, y]]), axis=0)
                     elif len(duplicates) > 0:
                         found = False
                         for vertex in self.vertices[duplicates]:
                             if distance(vertex, [x, y]) < 10:
                                 found = True
                         if not found:
-                            self.vertices = np.concatenate((self.vertices, [[x, y]]), axis=0)
+                            self.vertices = np.concatenate(
+                                (self.vertices, [[x, y]]), axis=0)
                     else:
-                        self.vertices = np.concatenate((self.vertices, [[x, y]]), axis=0)
-        return self.vertices
+                        self.vertices = np.concatenate(
+                            (self.vertices, [[x, y]]), axis=0)
+
+        # Convert vertices to their dictionary form now to avoid performing
+        # the conversion more than once later on. The plain array of vertices
+        # can still be accessed with ip.vertices if necessary
+        count = 1
+        for vertex in self.vertices:
+            self.nodes[str(count)] = [vertex[0], vertex[1]]
+            count += 1
+
+        return self.nodes
