@@ -39,10 +39,10 @@ class KnowledgeExtractor:
     # Saves either the threshold image or the original image with the contours
     def save_image(self, image_type):
         if image_type == self.ImageType.THRESHOLD:
-            cv.imwrite(datetime.now().strftime("%d%m%Y%H%M%S") + '.png', self.threshold)
+            cv.imwrite(datetime.now().strftime("%d%m%Y%H%M%S") + '_threshold.png', self.threshold)
         elif image_type == self.ImageType.CONTOUR:
             img_with_contours = self.get_image_with_contours()
-            cv.imwrite(datetime.now().strftime("%d%m%Y%H%M%S") + '.png', img_with_contours)
+            cv.imwrite(datetime.now().strftime("%d%m%Y%H%M%S") + '_contour.png', img_with_contours)
 
     # Returns the original image with the contours drawn over        
     def get_image_with_contours(self):
