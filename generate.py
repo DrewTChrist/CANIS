@@ -32,7 +32,7 @@ class Generator:
     def _get_dividing_factor(self, total):
         # The range 3 to 21 is used because real constellations have anywhere
         # from 3 to 20 edges
-        return int(total / np.random.randint(3, 21))
+        return int(total / np.random.randint(3, 21)) + 1
 
     def generate_pattern(self, type="subset", num_candidates=10, min_fitness=0):
         # Initialize an empty array of the correct format and size. The first
