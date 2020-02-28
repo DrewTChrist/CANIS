@@ -10,17 +10,19 @@ module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
 
 
-path = os.getcwd() + '\examples\filename.ext'
+path = os.getcwd() + '\examples\\bird.png'
 
 knowext = module.KnowledgeExtractor(path)
 
 # This method removes some of the contours
-knowext.thin_contours()
+# Step is the amount by which we skip over the vertices
+knowext.thin_contours(step=1)
 
 # Showing either images is optional and mostly for debugging
 knowext.show_threshold()
 
-knowext.show_image_with_contours()
+# Thickness is the thickness of the points representing vertices
+knowext.show_image_with_contours(thickness=1)
 
 # Saving either images is optional and mostly for debugging
 knowext.save_image(module.KnowledgeExtractor.ImageType.CONTOUR)
