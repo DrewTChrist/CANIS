@@ -17,12 +17,12 @@ knowext = module.KnowledgeExtractor(path)
 # This method removes some of the contours
 knowext.thin_contours()
 
-# Showing either images is optional
+# Showing either images is optional and mostly for debugging
 knowext.show_threshold()
 
 knowext.show_image_with_contours()
 
-# Saving either images is optional
+# Saving either images is optional and mostly for debugging
 knowext.save_image(module.KnowledgeExtractor.ImageType.CONTOUR)
 
 knowext.save_image(module.KnowledgeExtractor.ImageType.THRESHOLD)
