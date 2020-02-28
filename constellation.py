@@ -4,19 +4,14 @@ import matplotlib.pyplot as plt
 import networkx as nx
 
 
-class GraphBuilder:
+class ConstellationBuilder:
 
-    def __init__(self, img, nodes):
+    def __init__(self, img, graph, vertex_nodes):
+
+        # The star graph generated during the processing stage
+        self.G = nx.create_empty_copy(graph)
         self.img = img
-        self.vertex_nodes = nodes
-
-        # Initialize a new graph and populate it with vertices
-        self.G = nx.Graph()
-
-        # Add each node into the graph
-        self.G.add_nodes_from(self.vertex_nodes.keys())
-        for n, p in self.vertex_nodes.items():
-            self.G.nodes[n]['pos'] = p
+        self.nodes = vertex_nodes
 
     def add_edges(self, edges=[]):
         # Takes an array of edges to draw
@@ -24,7 +19,7 @@ class GraphBuilder:
 
     def visualize(self, color='w', save_fig=False, labels=False, size=0):
         # Setup a new plot
-        layout = nx.spring_layout(self.G, pos=self.vertex_nodes, fixed=self.vertex_nodes.keys())
+        layout = nx.spring_layout(self.G, pos=self.nodes, fixed=self.nodes.keys())
         plt.figure(1, figsize=(15, 15))
         plt.axis([0, self.img.width, 0, self.img.height])
 

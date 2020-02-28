@@ -1,39 +1,60 @@
 """Generate and evaluate new patterns and names."""
 import geometry
 import itertools
+import networkx as nx
 import numpy as np
 
 
 class Generator:
 
-    def __init__(self, nodes, num_edges=10):
-        self.vertex_nodes = nodes
+    def __init__(self, graph, vertex_nodes):
+        # Unconnected star graph
+        self.G_empty = graph
+
+        # Connected star graph
+        self.G_populated = graph
+
+        # Dictionary of the nodes
+        self.nodes = vertex_nodes
+
+        # An array of each key in nodes
         self.node_keys = []
 
-        for i in self.vertex_nodes.keys():
+        for i in self.nodes.keys():
             self.node_keys.append(i)
 
-        self.num_edges = num_edges
-        self.used_vertices = []
+        # The generated pattern
         self.pattern = []
 
-    # Genetic algorithm for generating a new pattern
-    def generate_pattern(self, num_candidates=10, min_fitness=30):
+        # Currently not implemented, might be useful for comparison
+        self.used_vertices = []
+
+    def _get_dividing_factor(self, total):
+        # The range 3 to 21 is used because real constellations have anywhere
+        # from 3 to 20 edges
+        return int(total / np.random.randint(3, 21))
+
+    def generate_pattern(self, type="subset", num_candidates=10, min_fitness=0):
         # Initialize an empty array of the correct format and size. The first
         # value of each index corresponds to that path's fitness score
-        candidates = [[0, [() for i in range(self.num_edges + 1)]] for i in range(num_candidates)]
+        candidates = []
 
         # Populate each index of candidates with a new random set of edges
         for i in range(num_candidates):
-            random_pattern = []
-            for j in range(self.num_edges):
-                random_pattern.append((np.random.choice(self.node_keys, 1)[0], np.random.choice(self.node_keys, 1)[0]))
+            G_copy = self.G_empty
 
-            candidates[i][1:] = random_pattern
+            if type == "full":
+                for j, k in itertools.combinations(self.nodes.keys(), 2):
+                    G_copy.add_edge(j, k, weight=geometry.distance(self.nodes[j], self.nodes[k]))
+            elif type == "subset":
+                key_len = len(self.nodes.keys())
+                subset = list(np.random.choice(range(1, key_len + 1), int(key_len / self._get_dividing_factor(key_len)), replace=False))
+                for j, k in itertools.combinations(subset, 2):
+                    G_copy.add_edge(j, k, weight=geometry.distance(self.nodes[j], self.nodes[k]))
 
-        # Evaluate the fitness of each initial random path
-        for i in range(num_candidates):
-            candidates[i][0] = self._evaluate_pattern(candidates[i][1:])
+            candidates.append([0, list(nx.minimum_spanning_edges(G_copy, data=False))])
+
+        # TODO: Evaluate each candidate here when evaluate_pattern is fixed
 
         # Sort the paths by fitness and store the highest fitness score
         candidates.sort(reverse=True, key=lambda x: x[0])
@@ -47,42 +68,16 @@ class Generator:
             # TODO: Make it an optional flag to print scores
             print(f'fitness={high_score}')
 
-        self.pattern = candidates[0][1:]
+        self.pattern = candidates[0][1:][0]
         return self.pattern
 
-    # Calculate the fitness score of a given path
-    # TODO: Create more metrics, tune the existing metrics
     def _evaluate_pattern(self, pattern):
+        # Calculate the fitness score of a given pattern
+        # TODO: Start from scratch
+
         score = 0
 
-        # Evaluate edge distances
-        for i in range(len(pattern)):
-            difference = geometry.distance(
-                self.vertex_nodes.get(pattern[i][0]),
-                self.vertex_nodes.get(pattern[i][1]))
-            if difference == 0:
-                score = score + 0
-            elif 0 < difference <= 200:
-                score = score + 1
-            elif 200 < difference <= 400:
-                score = score + 1
-            elif 400 < difference <= 600:
-                score = score + 2
-            elif 600 < difference <= 800:
-                score = score + 1
-            elif 800 < difference <= 1000:
-                score = score + 1
-            else:
-                score = score + 0
-
-        # Evaluate interceptions
-        for i, j in itertools.combinations(pattern, 2):
-            if geometry.has_intersection(self.vertex_nodes.get(i[0]), self.vertex_nodes.get(i[1]), self.vertex_nodes.get(j[0]), self.vertex_nodes.get(j[1])):
-                score = 0
-            else:
-                score = score + 1
-
-        return score
+        return np.random.randint(1, 11)
 
     # Mutate a new pattern from the existing patterns
     def _mutate_pattern(self, candidates):
@@ -91,7 +86,8 @@ class Generator:
 
         # Populate mutated with a new random path
         for i in range(self.num_edges):
-            mutated.append((np.random.choice(self.node_keys, 1)[0], np.random.choice(self.node_keys, 1)[0]))
+            mutated.append((np.random.choice(self.node_keys, 1)[0],
+                            np.random.choice(self.node_keys, 1)[0]))
 
         # Evaluate the fitness of the new path and return the top 10 candidates
         mutated[0] = self._evaluate_pattern(mutated[1:])

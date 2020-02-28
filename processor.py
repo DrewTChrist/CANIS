@@ -1,4 +1,6 @@
 """Process an image and extract star vertices."""
+import itertools
+import networkx as nx
 import numpy as np
 from datetime import datetime
 from geometry import distance
@@ -8,6 +10,9 @@ from PIL import Image
 class ImageProcessor:
 
     def __init__(self, img, threshold=200):
+        # A star graph containing the coordinates of each star
+        self.graph = nx.Graph()
+
         # A path to the image to process
         self.img = Image.open(img)
 
@@ -36,7 +41,8 @@ class ImageProcessor:
         # Optionally save the processed image
         if save_processed_img:
             now = datetime.now()
-            self.img.save('saved_figures/processed-' + now.strftime("%d%m%Y%H%M%S") + '.jpg')
+            self.img.save('saved_figures/processed-' + now.strftime(
+                "%d%m%Y%H%M%S") + '.jpg')
 
     def extract_vertices(self):
         # Extract vertices from the image by searching for white pixels. If
@@ -67,12 +73,16 @@ class ImageProcessor:
                         self.vertices = np.concatenate(
                             (self.vertices, [[x, y]]), axis=0)
 
-        # Convert vertices to their dictionary form now to avoid performing
-        # the conversion more than once later on. The plain array of vertices
-        # can still be accessed with ip.vertices if necessary
+    def build_graph(self, type="subset"):
+        # Convert vertices into a labelled dictionary of nodes
         count = 1
         for vertex in self.vertices:
-            self.nodes[str(count)] = [vertex[0], vertex[1]]
+            self.nodes[count] = [vertex[0], vertex[1]]
             count += 1
 
-        return self.nodes
+        # Build the star graph from the extracted nodes
+        self.graph.add_nodes_from(self.nodes.keys())
+        for n, p in self.nodes.items():
+            self.graph.nodes[n]['pos'] = p
+
+
