@@ -73,7 +73,7 @@ class ImageProcessor:
                         self.vertices = np.concatenate(
                             (self.vertices, [[x, y]]), axis=0)
 
-    def build_graph(self, type="subset"):
+    def build_graph(self):
         # Convert vertices into a labelled dictionary of nodes
         count = 1
         for vertex in self.vertices:
