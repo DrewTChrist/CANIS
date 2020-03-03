@@ -10,7 +10,7 @@ module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
 
 
-path = os.getcwd() + '\examples\\bird.png'
+path = os.getcwd() + '\examples\\filename.ext'
 
 knowext = module.KnowledgeExtractor(path)
 

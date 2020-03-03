@@ -9,9 +9,11 @@ module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
 
 
-ci = module.ConceptInquirer('dog')
+topic = input('Enter a topic: ')
 
-relationships = ci.get_is_a_relationships()
+ci = module.ConceptInquirer(topic)
+
+relationships = ci.get_IsA_nodes()
 
 for relation in relationships.items():
     print(relation)
