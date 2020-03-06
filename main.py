@@ -19,7 +19,12 @@ ip.build_graph()
 gen = Generator(ip)
 gen.generate_pattern(gen_type="subset")
 
-# Plot the generated pattern over the original image
-constellation = ConstellationBuilder(ip.original, ip.graph, ip.nodes)
+# Build a graph from the generated pattern
+constellation = ConstellationBuilder(ip.original, gen.used_nodes)
 constellation.add_edges(gen.pattern)
+
+# Identify an object from the graph
+
+
+# Plot the generated pattern over the original image
 constellation.visualize(color='w', save_fig=False, labels=False, size=0)

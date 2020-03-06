@@ -25,7 +25,10 @@ class Generator:
         # The final generated pattern
         self.pattern = []
 
-        # An array of raw coordinates to stars used in the generated pattern
+        # A filtered dictionary containing only the nodes that the pattern uses
+        self.used_nodes = {}
+
+        # An array of raw coordinates to only the nodes that the pattern uses
         self.used_vertices = []
 
     def _get_dividing_factor(self, total):
@@ -73,12 +76,12 @@ class Generator:
                     node_list.append(node)
                     self.used_vertices.append(self.ip.nodes[node])
 
-        return self.pattern
+        self.used_nodes = {k: v for k, v in self.ip.nodes.items() if k in node_list}
 
     def _evaluate_pattern(self, pattern, mode="off"):
         # Utilize a semi-supervised neural network to determine if a pattern is
         # allowed to be used or not. Evaluation is disabled when mode="off"
-        constellation = ConstellationBuilder(self.ip.processed, self.ip.graph, self.ip.nodes)
+        constellation = ConstellationBuilder(self.ip.processed, self.ip.nodes)
         constellation.add_edges(pattern)
 
         if mode == "off":

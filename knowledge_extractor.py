@@ -1,13 +1,10 @@
 """KnowledgeExtractor class will be used to extract meaningful information from 
 images that can be stored in a "knowledge-base" for the system.
 """
-
-
 import cv2 as cv2
+import numpy as np
 from datetime import datetime
 from enum import Enum
-import numpy as np
-from numpy import delete, vstack, squeeze
 
 
 class KnowledgeExtractor:
@@ -85,7 +82,7 @@ class KnowledgeExtractor:
 
     # Private method that converts alpha channel to white background
     def _add_white_background(self):
-        trans_mask = self.image[:,:,3] == 0
+        trans_mask = self.image[:, :, 3] == 0
         self.image[trans_mask] = [255, 255, 255, 255]
         self.image = cv2.cvtColor(self.image, cv2.COLOR_BGRA2BGR)
 
