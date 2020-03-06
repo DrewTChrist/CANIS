@@ -25,7 +25,7 @@ class Generator:
         # The final generated pattern
         self.pattern = []
 
-        # Currently not implemented, might be useful for comparison
+        # An array of raw coordinates to stars used in the generated pattern
         self.used_vertices = []
 
     def _get_dividing_factor(self, total):
@@ -65,6 +65,14 @@ class Generator:
             candidate = self._next_pattern(gen_type)
 
         self.pattern = candidate
+
+        node_list = []
+        for edge in self.pattern:
+            for node in edge:
+                if node not in node_list:
+                    node_list.append(node)
+                    self.used_vertices.append(self.ip.nodes[node])
+
         return self.pattern
 
     def _evaluate_pattern(self, pattern, mode="off"):
