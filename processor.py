@@ -1,5 +1,4 @@
 """Process an image and extract star vertices."""
-import itertools
 import networkx as nx
 import numpy as np
 from datetime import datetime
@@ -9,48 +8,52 @@ from PIL import Image
 
 class ImageProcessor:
 
-    def __init__(self, img, threshold=200):
-        # A star graph containing the coordinates of each star
-        self.graph = nx.Graph()
+    def __init__(self, original, threshold=200):
+        # The original image before processing
+        self.original = Image.open(original)
 
-        # A path to the image to process
-        self.img = Image.open(img)
+        # Image dimensions
+        self.width = self.original.width
+        self.height = self.original.height
 
-        # A dictionary of labelled nodes
-        self.nodes = {}
+        # The processed image
+        self.processed = self.original
 
-        # Determines the threshold for discarding stars during image
-        # processing. Value must be between 0 and 255, higher values mean
-        # more stars are discarded
+        # Brightness threshold
         self.threshold = threshold
 
         # An empty array to hold new vertices
         self.vertices = np.empty((0, 2), dtype=int)
 
+        # A dictionary of labelled nodes
+        self.nodes = {}
+
+        # A star graph containing the coordinates of each star
+        self.graph = nx.Graph()
+
     def process(self, save_processed_img=False):
         # The image is first converted to grayscale which replaces each
         # pixel's RGB values with just a single brightness value
-        self.img = self.img.convert('L')
+        self.processed = self.original.convert('L')
 
         # For each pixel, if the brightness value is below the brightness
-        # threshold then set the pixel to black, otherwise set the pixel to
-        # white
-        self.img = self.img.point(lambda x: 0 if x < self.threshold else 255,
-                                  '1')
+        # threshold then set the pixel to black, else set the pixel white
+        self.processed = self.processed.point(
+            lambda x: 0 if x < self.threshold else 255, '1')
 
         # Optionally save the processed image
         if save_processed_img:
             now = datetime.now()
-            self.img.save('saved_figures/processed-' + now.strftime(
+            self.processed.save('saved_figures/processed-' + now.strftime(
                 "%d%m%Y%H%M%S") + '.jpg')
 
     def extract_vertices(self):
         # Extract vertices from the image by searching for white pixels. If
         # a white pixel is within 5 pixels of another white pixel, then the
         # pixel is treated as a duplicate and the star is not counted twice
-        for x in range(self.img.width):
-            for y in range(self.img.height):
-                if self.img.getpixel((x, y)) == 255:
+        for x in range(self.processed.width):
+            for y in range(self.processed.height):
+                if self.processed.getpixel((x, y)) == 255:
                     # Get the indices of all vertices that fall within |x| <
                     # 5 or |y| < 5
                     duplicates = np.where(np.logical_or(
@@ -84,5 +87,3 @@ class ImageProcessor:
         self.graph.add_nodes_from(self.nodes.keys())
         for n, p in self.nodes.items():
             self.graph.nodes[n]['pos'] = p
-
-

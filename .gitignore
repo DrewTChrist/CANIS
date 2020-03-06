@@ -12,5 +12,5 @@ output/*
 !output/.gitkeep
 saved_figures/*
 !saved_figures/.gitkeep
-img/*
-!img/.gitkeep
+src_images/*
+!src_images/.gitkeep

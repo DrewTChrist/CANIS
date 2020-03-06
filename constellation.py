@@ -1,39 +1,51 @@
-"""Build a graph of nodes given a list of vertices and a source image."""
-from datetime import datetime
+"""Build and visualize a new constellation given image and edge data."""
 import matplotlib.pyplot as plt
 import networkx as nx
+import numpy as np
+from datetime import datetime
+from PIL import Image
 
 
 class ConstellationBuilder:
 
     def __init__(self, img, graph, vertex_nodes):
-
-        # The star graph generated during the processing stage
         self.G = nx.create_empty_copy(graph)
         self.img = img
         self.nodes = vertex_nodes
 
     def add_edges(self, edges=[]):
-        # Takes an array of edges to draw
+        # Takes an array of edges and applies them to the graph
         self.G.add_edges_from(edges)
 
-    def visualize(self, color='w', save_fig=False, labels=False, size=0):
-        # Setup a new plot
+    def _plot_to_array(self, fig):
+        # Converts a matplotlib figure to a 360 x 360 image to an array for
+        # analysis with a neural network.
+        fig.canvas.draw()
+        buffer = fig.canvas.tostring_rgb()
+        cols, rows = fig.canvas.get_width_height()
+        temp_img = Image.fromarray(np.fromstring(buffer, dtype=np.uint8).reshape(rows, cols, 3))
+        temp_img = temp_img.resize((360, 360), Image.ANTIALIAS)
+        return np.array(temp_img)
+
+    def visualize(self, color='w', show_fig=True, save_fig=False, to_array=False, labels=False, size=0):
+        # Initialize a new figure from the image and graph data
         layout = nx.spring_layout(self.G, pos=self.nodes, fixed=self.nodes.keys())
-        plt.figure(1, figsize=(15, 15))
+        fig = plt.figure(1, figsize=(15, 15))
         plt.axis([0, self.img.width, 0, self.img.height])
 
-        # Important to invert the y axis since the vertex coordinates came
-        # from an image, and image coordinates have their origin in the top
-        # left rather than the bottom left
+        # Invert the y axis so that image coordinates are oriented properly
         plt.gca().invert_yaxis()
         plt.margins(0, 0)
         plt.imshow(self.img)
         nx.draw_networkx(self.G, pos=layout, with_labels=labels, node_size=size, edge_color=color)
+
+        if to_array:
+            return self._plot_to_array(fig)
 
         if save_fig:
             now = datetime.now()
             save_path = 'saved_figures/constellation-'
             plt.savefig(save_path + now.strftime("%d%m%Y%H%M%S") + '.jpg', bbox_inches='tight', pad_inches=0)
 
-        plt.show()
+        if show_fig:
+            plt.show()

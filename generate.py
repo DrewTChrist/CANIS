@@ -1,96 +1,87 @@
 """Generate and evaluate new patterns and names."""
-import geometry
+
 import itertools
 import networkx as nx
 import numpy as np
+from constellation import ConstellationBuilder
+from geometry import distance
+from neuralnet import Evaluator
 
 
 class Generator:
 
-    def __init__(self, graph, vertex_nodes):
-        # Unconnected star graph
-        self.G_empty = graph
-
-        # Connected star graph
-        self.G_populated = graph
-
-        # Dictionary of the nodes
-        self.nodes = vertex_nodes
+    def __init__(self, ip):
+        # ImageProcessor object containing graph and node data
+        self.ip = ip
 
         # An array of each key in nodes
         self.node_keys = []
-
-        for i in self.nodes.keys():
+        for i in self.ip.nodes.keys():
             self.node_keys.append(i)
 
-        # The generated pattern
+        # Semi-supervised neural network for generated pattern evaluation
+        self.evaluator = Evaluator("pattern_eval.h5")
+
+        # The final generated pattern
         self.pattern = []
 
         # Currently not implemented, might be useful for comparison
         self.used_vertices = []
 
     def _get_dividing_factor(self, total):
-        # The range 3 to 21 is used because real constellations have anywhere
-        # from 3 to 20 edges
-        return int(total / np.random.randint(3, 21)) + 1
+        # The range 5 to 20 constrains the number of nodes to be selected
+        return int(total / np.random.randint(5, 20)) + 1
 
-    def generate_pattern(self, type="subset", num_candidates=10, min_fitness=0):
-        # Initialize an empty array of the correct format and size. The first
-        # value of each index corresponds to that path's fitness score
-        candidates = []
+    def _next_pattern(self, gen_type="subset"):
+        graph_copy = self.ip.graph
 
-        # Populate each index of candidates with a new random set of edges
-        for i in range(num_candidates):
-            G_copy = self.G_empty
+        # Utilize the full set of stars resulting in the same pattern after
+        # each generation for a given image
+        if gen_type == "full":
+            for j, k in itertools.combinations(self.ip.nodes.keys(), 2):
+                graph_copy.add_edge(j, k, weight=distance(self.ip.nodes[j], self.ip.nodes[k]))
 
-            if type == "full":
-                for j, k in itertools.combinations(self.nodes.keys(), 2):
-                    G_copy.add_edge(j, k, weight=geometry.distance(self.nodes[j], self.nodes[k]))
-            elif type == "subset":
-                key_len = len(self.nodes.keys())
-                subset = list(np.random.choice(range(1, key_len + 1), int(key_len / self._get_dividing_factor(key_len)), replace=False))
-                for j, k in itertools.combinations(subset, 2):
-                    G_copy.add_edge(j, k, weight=geometry.distance(self.nodes[j], self.nodes[k]))
+        # Randomly choose a subset of stars resulting in a different pattern
+        # after each generation
+        elif gen_type == "subset":
+            key_len = len(self.ip.nodes.keys())
+            subset = list(np.random.choice(range(1, key_len + 1), int(key_len / self._get_dividing_factor(key_len)), replace=False))
+            for j, k in itertools.combinations(subset, 2):
+                graph_copy.add_edge(j, k, weight=distance(self.ip.nodes[j], self.ip.nodes[k]))
 
-            candidates.append([0, list(nx.minimum_spanning_edges(G_copy, data=False))])
+        return list(nx.minimum_spanning_edges(graph_copy, data=False))
 
-        # TODO: Evaluate each candidate here when evaluate_pattern is fixed
+    def _mutate_pattern(self, candidate):
+        # TODO: Random chance to add a cycle to a pattern.
+        # TODO: Random chance to reduce edges to a node from 4 to 3.
+        return 0
 
-        # Sort the paths by fitness and store the highest fitness score
-        candidates.sort(reverse=True, key=lambda x: x[0])
-        high_score = candidates[0][0]
+    def generate_pattern(self, gen_type="subset", mode="off"):
+        # Start with a new generation. While the evaluator returns True,
+        # continue generating new patterns.
+        candidate = self._next_pattern(gen_type)
 
-        # Generation loop, continue mutating until we have an artefact that
-        # exceeds the specified minimum fitness
-        while high_score < min_fitness:
-            candidates = self._mutate_pattern(candidates)
-            high_score = candidates[0][0]
-            # TODO: Make it an optional flag to print scores
-            print(f'fitness={high_score}')
+        while not self._evaluate_pattern(candidate, mode):
+            candidate = self._next_pattern(gen_type)
 
-        self.pattern = candidates[0][1:][0]
+        self.pattern = candidate
         return self.pattern
 
-    def _evaluate_pattern(self, pattern):
-        # Calculate the fitness score of a given pattern
-        # TODO: Start from scratch
+    def _evaluate_pattern(self, pattern, mode="off"):
+        # Utilize a semi-supervised neural network to determine if a pattern is
+        # allowed to be used or not. Evaluation is disabled when mode="off"
+        constellation = ConstellationBuilder(self.ip.processed, self.ip.graph, self.ip.nodes)
+        constellation.add_edges(pattern)
 
-        score = 0
-
-        return np.random.randint(1, 11)
-
-    # Mutate a new pattern from the existing patterns
-    def _mutate_pattern(self, candidates):
-        # Initialize a new array with 0 being the first element
-        mutated = [0]
-
-        # Populate mutated with a new random path
-        for i in range(self.num_edges):
-            mutated.append((np.random.choice(self.node_keys, 1)[0],
-                            np.random.choice(self.node_keys, 1)[0]))
-
-        # Evaluate the fitness of the new path and return the top 10 candidates
-        mutated[0] = self._evaluate_pattern(mutated[1:])
-        candidates.append(mutated)
-        candidates.sort(reverse=True, key=lambda x: x[0])
-        return candidates[:10]
+        if mode == "off":
+            return True
+        elif mode == "predict":
+            # Plot the current pattern, convert the plot to an array, and feed
+            # the result to the evaluator for approval
+            if self.evaluator.predict(constellation.visualize(to_array=True)) > 0.6:
+                return True
+            else:
+                return False
+        elif mode == "train":
+            # Do some training stuff here
+            return True
