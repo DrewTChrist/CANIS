@@ -17,18 +17,6 @@ class ConstellationBuilder:
         # Takes an array of edges and applies them to the graph
         self.graph.add_edges_from(edges)
 
-    def get_center(self):
-        # Find the center-most node in the graph and return it's coordinates.
-        # If there is more than one center node, calculate their midpoint.
-        centroids = nx.center(self.graph)
-
-        if len(centroids) == 1:
-            return self.nodes[centroids[0]]
-        else:
-            x1, y1 = self.nodes[centroids[0]]
-            x2, y2 = self.nodes[centroids[1]]
-            return [(x1 + x2) / 2, (y1 + y2) / 2]
-
     def _plot_to_array(self, fig):
         # Converts a matplotlib figure to a 360 x 360 image to an array for
         # analysis with a neural network.
@@ -39,7 +27,7 @@ class ConstellationBuilder:
         temp_img = temp_img.resize((360, 360), Image.ANTIALIAS)
         return np.array(temp_img)
 
-    def visualize(self, color='w', show_fig=True, save_fig=False, to_array=False, labels=False, size=0):
+    def visualize(self, color='w', show_fig=True, save_fig=False, to_array=False, labels=False, size=0, center=[0, 0], t_vertices=[]):
         # Initialize a new figure from the image and graph data
         layout = nx.spring_layout(self.graph, pos=self.nodes, fixed=self.nodes.keys())
         fig = plt.figure(1, figsize=(15, 15))
@@ -50,6 +38,13 @@ class ConstellationBuilder:
         plt.margins(0, 0)
         plt.imshow(self.img)
         nx.draw_networkx(self.graph, pos=layout, with_labels=labels, node_size=size, edge_color=color)
+
+        if center != [0, 0]:
+            plt.plot(center[0], center[1], color='r', marker='x', markersize=20)
+
+        if len(t_vertices) > 0:
+            for t_vertex in t_vertices:
+                plt.plot(t_vertex[0], t_vertex[1], color='y', marker='o', markersize=10)
 
         if to_array:
             return self._plot_to_array(fig)

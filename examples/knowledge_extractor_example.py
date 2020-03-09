@@ -3,7 +3,7 @@ sys.path.append(os.getcwd())
 from modules.knowledge_extractor import KnowledgeExtractor
 
 
-path = os.getcwd() + '\examples\\filename.ext'
+path = os.getcwd() + '\examples\\test.png'
 
 knowext = KnowledgeExtractor(path)
 
