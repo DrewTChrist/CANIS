@@ -3,9 +3,9 @@
 import itertools
 import networkx as nx
 import numpy as np
-from constellation import ConstellationBuilder
-from geometry import distance
-from neuralnet import Evaluator
+from modules.constellation import ConstellationBuilder
+from modules.geometry import distance
+from modules.neuralnet import Evaluator
 
 
 class Generator:

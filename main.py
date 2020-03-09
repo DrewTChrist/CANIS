@@ -1,8 +1,8 @@
 """Main driver code."""
 import os
-from constellation import ConstellationBuilder
-from generate import Generator
-from processor import ImageProcessor
+from modules.constellation import ConstellationBuilder
+from modules.generate import Generator
+from modules.processor import ImageProcessor
 
 # Test images can be placed in the /src_images folder
 image_name = 'sky1.jpg'

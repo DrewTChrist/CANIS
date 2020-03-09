@@ -2,7 +2,7 @@
 import networkx as nx
 import numpy as np
 from datetime import datetime
-from geometry import distance
+from modules.geometry import distance
 from PIL import Image
 
 
