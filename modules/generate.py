@@ -1,11 +1,15 @@
 """Generate and evaluate new patterns and names."""
 
 import itertools
+import random
 import networkx as nx
 import numpy as np
+import nltk
+from nltk.corpus import wordnet as wn
 from modules.constellation import ConstellationBuilder
 from modules.geometry import distance
 from modules.neuralnet import Evaluator
+from modules.concept_query import ConceptInquirer
 
 
 class Generator:
@@ -108,6 +112,22 @@ class NameGenerator:
                                 ['JJ', 'VBG', 'NN']]
 
         self.current_template = random.choice(self.pos_templates)
+
+
+    def generate_name(self):
+        template = random.choice(self.pos_templates)
+        name = ''
+
+        for pos in template:
+            if pos == 'JJ':
+                name += self.get_adjective() + ' '
+            elif pos == 'VBG':
+                name += self.get_gerund_verb() + ' '
+            elif pos == 'NN':
+                name += self.get_hypernym()
+
+        return name
+
 
 
     def get_synsets(self):
