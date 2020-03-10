@@ -18,43 +18,43 @@ class ConceptInquirer:
 
     # Dog is related to pet
     def get_RelatedTo_nodes(self, limit=10):
-        return self._get_relationships(self.QueryType.RelatedTo, self.NodeType.START, limit=10)
+        return self._get_relationships(self.QueryType.RelatedTo, self.NodeType.START, limit)
 
     # Dogged is a form of dog
     def get_FormOf_nodes(self, limit=10):
-        return self._get_relationships(self.QueryType.FormOf, self.NodeType.END, limit=10)
+        return self._get_relationships(self.QueryType.FormOf, self.NodeType.END, limit)
 
     # A poodle is a dog
     def get_IsA_nodes(self, limit=10):
-        return self._get_relationships(self.QueryType.IsA, self.NodeType.END, limit=10)
+        return self._get_relationships(self.QueryType.IsA, self.NodeType.END, limit)
 
     # Legs are part of dog
     def get_PartOf_nodes(self, limit=10):
-        return self._get_relationships(self.QueryType.PartOf, self.NodeType.END, limit=10)
+        return self._get_relationships(self.QueryType.PartOf, self.NodeType.END, limit)
 
     # A dog has four legs
     def get_HasA_nodes(self, limit=10):
-        return self._get_relationships(self.QueryType.HasA, self.NodeType.START, limit=10)
+        return self._get_relationships(self.QueryType.HasA, self.NodeType.START, limit)
 
     # A dog is used for running after the ball
     def get_UsedFor_nodes(self, limit=10):
-        return self._get_relationships(self.QueryType.UsedFor, self.NodeType.START, limit=10)
+        return self._get_relationships(self.QueryType.UsedFor, self.NodeType.START, limit)
 
     # A dog is capable of bark
     def get_CapableOf_nodes(self, limit=10):
-        return self._get_relationships(self.QueryType.CapableOf, self.NodeType.START, limit=10)
+        return self._get_relationships(self.QueryType.CapableOf, self.NodeType.START, limit)
 
     # A location of dog is a kennel
     def get_AtLocation_nodes(self, limit=10):
-        return self._get_relationships(self.QueryType.AtLocation, self.NodeType.START, limit=10)
+        return self._get_relationships(self.QueryType.AtLocation, self.NodeType.START, limit)
 
     # A hurricane causes a disaster
     def get_Causes_nodes(self, limit=10):
-        return self._get_relationships(self.QueryType.Causes, self.NodeType.START, limit=10)
+        return self._get_relationships(self.QueryType.Causes, self.NodeType.START, limit)
 
     # Dog is has a subevent of pee against trees
-    def get_HasSubevent_nodes(self):
-        return self._get_relationships(self.QueryType.HasSubevent, self.NodeType.START, limit=10)
+    def get_HasSubevent_nodes(self, limit=10):
+        return self._get_relationships(self.QueryType.HasSubevent, self.NodeType.START, limit)
 
 
     # Methods below this are not meant to be used outside of the class
