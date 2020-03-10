@@ -96,3 +96,40 @@ class Generator:
         elif mode == "train":
             # Do some training stuff here
             return True
+
+
+class NameGenerator:
+
+    def __init__(self, topic):
+        self.hyponym = topic
+        self.concept_inquirer = ConceptInquirer(topic)
+        self.pos_templates = [['VBG', 'NN'],
+                                ['JJ', 'NN'],
+                                ['JJ', 'VBG', 'NN']]
+
+        self.current_template = random.choice(self.pos_templates)
+
+
+    def get_synsets(self):
+        return wn.synsets(self.hyponym)
+
+    def get_hypernym(self):
+        return random.choice(list(self.concept_inquirer.get_IsA_nodes(1000).keys()))
+
+    def get_adjective(self):
+        related_to_nodes = self.concept_inquirer.get_RelatedTo_nodes(1000)
+
+        randnode = random.choice(list(related_to_nodes.keys()))
+        while nltk.pos_tag([randnode])[0][1] != 'JJ':
+            randnode = random.choice(list(related_to_nodes.keys()))
+    
+        return randnode
+
+    def get_gerund_verb(self):
+        related_to_nodes = self.concept_inquirer.get_RelatedTo_nodes(1000)
+
+        randnode = random.choice(list(related_to_nodes.keys()))
+        while nltk.pos_tag([randnode])[0][1] != 'VBG':
+            randnode = random.choice(list(related_to_nodes.keys()))
+    
+        return randnode
