@@ -6,7 +6,7 @@ from modules.generate import Generator
 from modules.processor import ImageProcessor
 
 # Test images can be placed in the /src_images folder
-image_name = 'sky2.jpg'
+image_name = 'sky1.jpg'
 
 # Open a new image for processing and store the ImageProcessor object
 ip = ImageProcessor(os.path.join(os.path.curdir, "./src_images/" + image_name))

@@ -44,7 +44,7 @@ class ConstellationBuilder:
 
         if len(t_vertices) > 0:
             for t_vertex in t_vertices:
-                plt.plot(t_vertex[0], t_vertex[1], color='y', marker='o', markersize=10)
+                plt.plot(t_vertex[0], t_vertex[1], color='y', marker='o', markersize=5)
 
         if to_array:
             return self._plot_to_array(fig)

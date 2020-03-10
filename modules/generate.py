@@ -33,7 +33,7 @@ class Generator:
 
     def _get_dividing_factor(self, total):
         # The range 5 to 20 constrains the number of nodes to be selected
-        return int(total / np.random.randint(5, 20)) + 1
+        return int(total / np.random.randint(5, 15)) + 1
 
     def _next_pattern(self, gen_type="subset"):
         graph_copy = self.ip.graph
