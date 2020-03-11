@@ -18,16 +18,6 @@ class Comparator:
         self.score = 0
         self.object = ""
 
-    def reset_fields(self, s_vertices):
-        self.s_vertices = s_vertices
-        self.s_center = self._calculate_center(self.s_vertices)
-
-        self.t_vertices = []
-        self.t_center = [0, 0]
-
-        self.score = 0
-        self.object = ""
-
     def fit(self):
         # Use a local knowledge extractor for now
         knowext = KnowledgeExtractor("test1.png")
