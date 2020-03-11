@@ -1,4 +1,5 @@
 """Main driver code."""
+import math
 import os
 from modules.compare import Comparator
 from modules.constellation import Constellation
@@ -15,7 +16,7 @@ ip = ImageProcessor(os.path.join(os.path.curdir, "./src_images/" + image_name))
 ip.process()
 
 # Arbitrary starting score that will always be larger than compare.score
-best_score = 10_000
+best_score = math.inf
 
 for i in range(1000):
     # Generate a new star pattern using the dictionary of stars
