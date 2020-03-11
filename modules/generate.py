@@ -34,7 +34,8 @@ class PatternGenerator:
 
     def generate_pattern(self, gen_type="subset", mode="off"):
         candidate = self._mst_pattern(gen_type)
-
+        if np.random.uniform() > 0.5:
+            self._get_cycle(candidate)
         # Revisit when ready to implement the neural network.
         # while not self._evaluate_pattern(candidate, mode):
         #    candidate = self._next_pattern(gen_type)
@@ -63,37 +64,59 @@ class PatternGenerator:
         # after each generation
         elif gen_type == "subset":
             key_len = len(self.node_keys)
-            subset = list(np.random.choice(range(1, key_len + 1), int(key_len / (key_len / np.random.randint(5, 15)) + 1),
-                                           replace=False))
+            subset = list(
+                np.random.choice(range(1, key_len + 1), int(key_len / (key_len / np.random.randint(5, 18)) + 1),
+                                 replace=False))
             for i, j in itertools.combinations(subset, 2):
                 graph.add_edge(i, j, weight=euclidean(self.all_nodes[i], self.all_nodes[j]))
 
         return list(nx.minimum_spanning_edges(graph, data=False))
 
-    def _mutate_pattern(self, candidate):
-        # TODO: Random chance to add a cycle to a pattern.
-        # TODO: Random chance to reduce edges to a node from 4 to 3.
-        return 0
+    def _get_cycle(self, candidate):
+        node_list = []
+        for edge in candidate:
+            for node in edge:
+                if node not in node_list:
+                    node_list.append(node)
+
+        np.random.shuffle(node_list)
+
+        for i, j in itertools.combinations(node_list, 2):
+            intersection = False
+            for k, n in itertools.combinations(node_list, 2):
+                if self._intersect(self.all_nodes[i], self.all_nodes[j], self.all_nodes[k], self.all_nodes[n]):
+                    intersection = True
+            if intersection is False and (i, j) not in candidate:
+                candidate.append((i, j))
+
+    # Credit: https://bryceboe.com/2006/10/23/line-segment-intersection-algorithm/
+    # Return true if line segments AB and CD intersect
+    def _intersect(self, A, B, C, D):
+        return self._ccw(A, C, D) != self._ccw(B, C, D) and self._ccw(A, B, C) != self._ccw(A, B, D)
+
+    # Determine if A, B, C are oriented counterclockwise
+    def _ccw(self, A, B, C):
+        return (C[1] - A[1]) * (B[0] - A[0]) > (B[1] - A[1]) * (C[0] - A[0])
 
     # TODO: Revisit when ready to implement the neural network.
     # def _evaluate_pattern(self, pattern, mode="off"):
-        # Utilize a semi-supervised neural network to determine if a pattern is
-        # allowed to be used or not. Evaluation is disabled when mode="off"
-        # constellation = ConstellationBuilder(self.processed, self.nodes)
-        # constellation.add_edges(pattern)
+    # Utilize a semi-supervised neural network to determine if a pattern is
+    # allowed to be used or not. Evaluation is disabled when mode="off"
+    # constellation = ConstellationBuilder(self.processed, self.nodes)
+    # constellation.add_edges(pattern)
 
-        # if mode == "off":
-            # return True
-        # elif mode == "predict":
-            # Plot the current pattern, convert the plot to an array, and feed
-            # the result to the evaluator for approval
-            # if self.evaluator.predict(constellation.visualize(to_array=True)) > 0.6:
-                # return True
-            # else:
-                # return False
-        # elif mode == "train":
-            # Do some training stuff here
-            # return True
+    # if mode == "off":
+    # return True
+    # elif mode == "predict":
+    # Plot the current pattern, convert the plot to an array, and feed
+    # the result to the evaluator for approval
+    # if self.evaluator.predict(constellation.visualize(to_array=True)) > 0.6:
+    # return True
+    # else:
+    # return False
+    # elif mode == "train":
+    # Do some training stuff here
+    # return True
 
 
 class NameGenerator:

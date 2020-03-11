@@ -7,7 +7,7 @@ from modules.generate import PatternGenerator
 from modules.processor import ImageProcessor
 
 # Test images can be placed in the /src_images folder
-image_name = 'sky1.jpg'
+image_name = 'sky2.jpg'
 
 # Open a new image for processing and store the ImageProcessor object
 ip = ImageProcessor(os.path.join(os.path.curdir, "./src_images/" + image_name))
@@ -32,7 +32,6 @@ for i in range(1000):
         print(best_score)
         best_score = compare.score
         best_s_nodes = pattern_gen.s_nodes
-        best_s_center = compare.s_center
         best_pattern = pattern_gen.pattern
         best_t_vertices = compare.t_vertices
 
@@ -46,4 +45,4 @@ constellation = Constellation(ip.original, best_s_nodes)
 constellation.add_edges(best_pattern)
 
 # Plot the constellation over the original image
-constellation.visualize(color='w', save_fig=False, labels=False, size=0, center=best_s_center, t_vertices=best_t_vertices)
+constellation.visualize(color='w', save_fig=True, labels=False, size=0, t_vertices=best_t_vertices)

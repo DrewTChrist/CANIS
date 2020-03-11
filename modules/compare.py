@@ -1,4 +1,5 @@
 import itertools
+import math
 import numpy as np
 from modules.knowledge_extractor import KnowledgeExtractor
 from scipy.spatial.distance import directed_hausdorff
@@ -15,28 +16,26 @@ class Comparator:
         self.best = []
         self.t_center = [0, 0]
 
-        self.score = 0
+        self.score = math.inf
         self.object = ""
 
     def fit(self):
         # Use a local knowledge extractor for now
         knowext = KnowledgeExtractor("test1.png")
-        knowext.thin_contours(step=20)
+        knowext.thin_contours(step=15)
         self.t_vertices = knowext.contours
         self._scale_coordinates()
         self._convert_coordinates()
 
-        self.score = directed_hausdorff(self.s_vertices, self.t_vertices)[0]
-        score_state = np.copy(self.t_vertices)
-
-        for i in range(23):
-            self._rotate_coordinates(np.pi/12)
+        for i in range(24):
             current = directed_hausdorff(self.s_vertices, self.t_vertices)[0]
 
             if current < self.score:
                 self.score = current
                 score_state = np.copy(self.t_vertices)
                 self.object = "object name here"
+
+            self._rotate_coordinates()
 
         self.t_vertices = score_state
 
@@ -91,7 +90,7 @@ class Comparator:
             self.t_vertices[i][0] += self.s_center[0]
             self.t_vertices[i][1] += self.s_center[1]
 
-    def _rotate_coordinates(self, radians=np.pi/6):
+    def _rotate_coordinates(self, radians=np.pi/12):
         # Rotate the topic vertices by some angle in radians, defaults to 30
         # degrees
         ox, oy = self.s_center[0], self.s_center[1]
