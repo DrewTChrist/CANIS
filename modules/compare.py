@@ -1,46 +1,94 @@
 import itertools
 import numpy as np
-from modules.geometry import distance
 from modules.knowledge_extractor import KnowledgeExtractor
 from scipy.spatial.distance import directed_hausdorff
+from scipy.spatial.distance import euclidean
 
 
 class Comparator:
 
-    def __init__(self, star_vertices):
-        self.s_vertices = star_vertices
-        self.s_center = self.get_center(self.s_vertices)
+    def __init__(self, s_vertices):
+        self.s_vertices = s_vertices
+        self.s_center = self._calculate_center(self.s_vertices)
+
+        self.t_vertices = []
+        self.best = []
+        self.t_center = [0, 0]
+
+        self.score = 0
+        self.object = ""
+
+    def reset_fields(self, s_vertices):
+        self.s_vertices = s_vertices
+        self.s_center = self._calculate_center(self.s_vertices)
 
         self.t_vertices = []
         self.t_center = [0, 0]
 
-    def get_center(self, vertices):
+        self.score = 0
+        self.object = ""
+
+    def fit(self):
+        # Use a local knowledge extractor for now
+        knowext = KnowledgeExtractor("test1.png")
+        knowext.thin_contours(step=20)
+        self.t_vertices = knowext.contours
+        self._scale_coordinates()
+        self._convert_coordinates()
+
+        self.score = directed_hausdorff(self.s_vertices, self.t_vertices)[0]
+        score_state = np.copy(self.t_vertices)
+
+        for i in range(23):
+            self._rotate_coordinates(np.pi/12)
+            current = directed_hausdorff(self.s_vertices, self.t_vertices)[0]
+
+            if current < self.score:
+                self.score = current
+                score_state = np.copy(self.t_vertices)
+                self.object = "object name here"
+
+        self.t_vertices = score_state
+
+    def _calculate_center(self, vertices):
         # Calculates the center of a set of vertices by taking the average x and
         # average y values
-        num_vertices = len(vertices)
-        center_x = 0
-        center_y = 0
+        x_center, y_center = 0, 0
 
         for vertex in vertices:
-            center_x += vertex[0]
-            center_y += vertex[1]
+            x_center += vertex[0]
+            y_center += vertex[1]
 
-        return [int(round(center_x / num_vertices)), int(round(center_y / num_vertices))]
+        return [x_center / len(vertices), y_center / len(vertices)]
 
-    def get_furthest_distance(self, vertices):
+    def _scale_coordinates(self):
+        # Calculate the longest distance between any two vertices in each set
+        s_longest = self._calculate_longest(self.s_vertices)
+        t_longest = self._calculate_longest(self.t_vertices)
+
+        # Take the ratio of these two distances
+        scalar = s_longest / t_longest
+
+        # Apply the scaling to each coordinate in the topic set
+        for vertex in self.t_vertices:
+            vertex[0] *= scalar
+            vertex[1] *= scalar
+
+    def _calculate_longest(self, vertices):
         # Returns the distance between the two furthest apart vertices in a set
         # of vertices
-        furthest = 0
+        longest = 0
 
         for i, j in itertools.combinations(vertices, 2):
-            if distance(i, j) > furthest:
-                furthest = distance(i, j)
+            new_distance = euclidean(i, j)
+            if new_distance > longest:
+                longest = new_distance
 
-        return furthest
+        return longest
 
-    def convert_coordinates(self):
+    def _convert_coordinates(self):
         # Calculate the topic center
-        self.t_center = self.get_center(self.t_vertices)
+        self.t_center = self._calculate_center(self.t_vertices)
 
         # Get the relative coordinates of each topic vertex to the topic center
         for i in range(len(self.t_vertices)):
@@ -53,45 +101,12 @@ class Comparator:
             self.t_vertices[i][0] += self.s_center[0]
             self.t_vertices[i][1] += self.s_center[1]
 
-    def scale_coordinates(self):
-        # Calculate the distance between the furthest two vertices in the star
-        # set and the topic set
-        s_furthest = self.get_furthest_distance(self.s_vertices)
-        t_furthest = self.get_furthest_distance(self.t_vertices)
-
-        # Take the ratio of these two distances
-        scalar = s_furthest / t_furthest
-
-        # Apply the scaling to each coordinate in the topic set
-        for i in range(len(self.t_vertices)):
-            self.t_vertices[i][0] *= scalar
-            self.t_vertices[i][1] *= scalar
-
-    def rotate_coordinates(self, radians=np.pi/6):
+    def _rotate_coordinates(self, radians=np.pi/6):
         # Rotate the topic vertices by some angle in radians, defaults to 30
         # degrees
         ox, oy = self.s_center[0], self.s_center[1]
         c, s = np.cos(radians), np.sin(radians)
-        for i in range(len(self.t_vertices)):
-            px, py = self.t_vertices[i][0], self.t_vertices[i][1]
-            self.t_vertices[i][0] = c * (px - ox) - s * (py - oy) + ox
-            self.t_vertices[i][1] = s * (px - ox) + c * (py - oy) + oy
-
-    def best_fit(self):
-        # Use a local knowledge extractor for now
-        knowext = KnowledgeExtractor("test1.png")
-        knowext.thin_contours(step=22)
-        self.t_vertices = knowext.contours
-        self.scale_coordinates()
-        self.convert_coordinates()
-
-        best = directed_hausdorff(self.s_vertices, self.t_vertices)
-
-        for i in range(23):
-            self.rotate_coordinates(np.pi/12)
-            current = directed_hausdorff(self.s_vertices, self.t_vertices)
-
-            if current < best:
-                best = current
-
-        print(best)
+        for vertex in self.t_vertices:
+            px, py = vertex[0], vertex[1]
+            vertex[0] = c * (px - ox) - s * (py - oy) + ox
+            vertex[1] = s * (px - ox) + c * (py - oy) + oy

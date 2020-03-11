@@ -6,7 +6,7 @@ from datetime import datetime
 from PIL import Image
 
 
-class ConstellationBuilder:
+class Constellation:
 
     def __init__(self, img, used_nodes):
         self.graph = nx.Graph()
@@ -16,16 +16,6 @@ class ConstellationBuilder:
     def add_edges(self, edges=[]):
         # Takes an array of edges and applies them to the graph
         self.graph.add_edges_from(edges)
-
-    def _plot_to_array(self, fig):
-        # Converts a matplotlib figure to a 360 x 360 image to an array for
-        # analysis with a neural network.
-        fig.canvas.draw()
-        buffer = fig.canvas.tostring_rgb()
-        cols, rows = fig.canvas.get_width_height()
-        temp_img = Image.fromarray(np.fromstring(buffer, dtype=np.uint8).reshape(rows, cols, 3))
-        temp_img = temp_img.resize((360, 360), Image.ANTIALIAS)
-        return np.array(temp_img)
 
     def visualize(self, color='w', show_fig=True, save_fig=False, to_array=False, labels=False, size=0, center=[0, 0], t_vertices=[]):
         # Initialize a new figure from the image and graph data
@@ -43,8 +33,7 @@ class ConstellationBuilder:
             plt.plot(center[0], center[1], color='r', marker='x', markersize=20)
 
         if len(t_vertices) > 0:
-            for t_vertex in t_vertices:
-                plt.plot(t_vertex[0], t_vertex[1], color='y', marker='o', markersize=5)
+            plt.plot(t_vertices[:, 0], t_vertices[:, 1], color='y', marker='o', markersize=5)
 
         if to_array:
             return self._plot_to_array(fig)
@@ -56,3 +45,13 @@ class ConstellationBuilder:
 
         if show_fig:
             plt.show()
+
+    def _plot_to_array(self, fig):
+        # Converts a matplotlib figure to a 360 x 360 image to an array for
+        # analysis with a neural network.
+        fig.canvas.draw()
+        buffer = fig.canvas.tostring_rgb()
+        cols, rows = fig.canvas.get_width_height()
+        temp_img = Image.fromarray(np.fromstring(buffer, dtype=np.uint8).reshape(rows, cols, 3))
+        temp_img = temp_img.resize((360, 360), Image.ANTIALIAS)
+        return np.array(temp_img)
