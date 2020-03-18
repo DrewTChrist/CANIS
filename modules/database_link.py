@@ -29,11 +29,10 @@ def get_collection(database, collection_name):
     return database[collection_name]
 
 
-def insert_into(collection, topic_name, topic_vertices):
+def insert_into(collection, topic_name, height, width, topic_vertices):
     topic_to_insert = {'Name': topic_name,
+                        'Height': height,
+                        'Width': width,
                         'Vertices': topic_vertices}
 
     return collection.insert_one(topic_to_insert)
-
-def delete_where(collection, query):
-    return collection.delete_one(query)
