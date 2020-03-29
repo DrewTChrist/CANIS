@@ -34,13 +34,19 @@ class PatternGenerator:
 
     def generate_pattern(self, gen_type="subset", mode="off"):
         candidate = self._mst_pattern(gen_type)
-        if np.random.uniform() > 0.5:
-            self._get_cycle(candidate)
+
+        for i in range(3):
+            if np.random.uniform(0, 1) > 0.5:
+                edge = self._get_cycle(candidate)
+
+                if edge is not None:
+                    candidate.append(edge)
+
+        self.pattern = candidate
+
         # Revisit when ready to implement the neural network.
         # while not self._evaluate_pattern(candidate, mode):
         #    candidate = self._next_pattern(gen_type)
-
-        self.pattern = candidate
 
         node_list = []
         for edge in self.pattern:
@@ -65,7 +71,7 @@ class PatternGenerator:
         elif gen_type == "subset":
             key_len = len(self.node_keys)
             subset = list(
-                np.random.choice(range(1, key_len + 1), int(key_len / (key_len / np.random.randint(5, 18)) + 1),
+                np.random.choice(range(1, key_len + 1), int(key_len / (key_len / np.random.randint(5, 10)) + 1),
                                  replace=False))
             for i, j in itertools.combinations(subset, 2):
                 graph.add_edge(i, j, weight=euclidean(self.all_nodes[i], self.all_nodes[j]))
@@ -82,21 +88,47 @@ class PatternGenerator:
         np.random.shuffle(node_list)
 
         for i, j in itertools.combinations(node_list, 2):
-            intersection = False
-            for k, n in itertools.combinations(node_list, 2):
-                if self._intersect(self.all_nodes[i], self.all_nodes[j], self.all_nodes[k], self.all_nodes[n]):
-                    intersection = True
-            if intersection is False and (i, j) not in candidate:
-                candidate.append((i, j))
+            angle, intersection = False, False
+            A, B = self.all_nodes[i], self.all_nodes[j]
+
+            for edge in candidate:
+                C, D = self.all_nodes[edge[0]], self.all_nodes[edge[1]]
+                intersection = self._intersection(A, B, C, D)
+                angle = self._angle(A, B, C, D)
+
+            if angle == False and intersection == False:
+                return i, j
 
     # Credit: https://bryceboe.com/2006/10/23/line-segment-intersection-algorithm/
     # Return true if line segments AB and CD intersect
-    def _intersect(self, A, B, C, D):
+    def _intersection(self, A, B, C, D):
         return self._ccw(A, C, D) != self._ccw(B, C, D) and self._ccw(A, B, C) != self._ccw(A, B, D)
 
     # Determine if A, B, C are oriented counterclockwise
     def _ccw(self, A, B, C):
         return (C[1] - A[1]) * (B[0] - A[0]) > (B[1] - A[1]) * (C[0] - A[0])
+
+    def _angle(self, A, B, C, D):
+        vector1 = [(A[0] - B[0]), (A[1] - B[1])]
+        vector2 = [(C[0] - D[0]), (C[1] - D[1])]
+        vector1 /= np.sqrt((np.power(vector1[0], 2) + np.power(vector1[1], 2)))
+        vector2 /= np.sqrt((np.power(vector2[0], 2) + np.power(vector2[1], 2)))
+        dot_product = vector1[0] * vector2[0] + vector1[1] * vector2[1]
+
+        if dot_product < -1:
+            dot_product = -1
+        elif dot_product > 1:
+            dot_product = 1
+
+        angle = np.degrees(np.arccos(dot_product))
+
+        if angle > 180:
+            angle = 360 - angle
+
+        if 80 > angle < 110:
+            return True
+        else:
+            return False
 
     # TODO: Revisit when ready to implement the neural network.
     # def _evaluate_pattern(self, pattern, mode="off"):

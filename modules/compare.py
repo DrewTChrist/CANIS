@@ -1,43 +1,41 @@
 import itertools
 import math
 import numpy as np
-from modules.knowledge_extractor import KnowledgeExtractor
 from scipy.spatial.distance import directed_hausdorff
 from scipy.spatial.distance import euclidean
 
 
 class Comparator:
 
-    def __init__(self, s_vertices):
+    def __init__(self, s_vertices, knowledge):
         self.s_vertices = s_vertices
         self.s_center = self._calculate_center(self.s_vertices)
 
-        self.t_vertices = []
-        self.best = []
+        self.knowledge = knowledge
+        self.best_label = ""
+        self.best_vertices = []
         self.t_center = [0, 0]
 
         self.score = math.inf
-        self.object = ""
 
     def fit(self):
-        # Use a local knowledge extractor for now
-        knowext = KnowledgeExtractor("test1.png")
-        knowext.thin_contours(step=15)
-        self.t_vertices = knowext.contours
-        self._scale_coordinates()
-        self._convert_coordinates()
+        # Iterate through each topic
+        for topic in self.knowledge:
+            temp = np.copy(topic.vertices)
+            self._scale_coordinates(topic.vertices)
+            self._convert_coordinates(topic.vertices)
 
-        for i in range(24):
-            current = directed_hausdorff(self.s_vertices, self.t_vertices)[0]
+            for i in range(24):
+                current = directed_hausdorff(self.s_vertices, topic.vertices)[0]
 
-            if current < self.score:
-                self.score = current
-                score_state = np.copy(self.t_vertices)
-                self.object = "object name here"
+                if current < self.score:
+                    self.score = current
+                    self.best_label = topic.label
+                    self.best_vertices = np.copy(topic.vertices)
 
-            self._rotate_coordinates()
+                self._rotate_coordinates(topic.vertices)
 
-        self.t_vertices = score_state
+            topic.vertices = temp
 
     def _calculate_center(self, vertices):
         # Calculates the center of a set of vertices by taking the average x and
@@ -50,16 +48,16 @@ class Comparator:
 
         return [x_center / len(vertices), y_center / len(vertices)]
 
-    def _scale_coordinates(self):
+    def _scale_coordinates(self, t_vertices):
         # Calculate the longest distance between any two vertices in each set
         s_longest = self._calculate_longest(self.s_vertices)
-        t_longest = self._calculate_longest(self.t_vertices)
+        t_longest = self._calculate_longest(t_vertices)
 
         # Take the ratio of these two distances
         scalar = s_longest / t_longest
 
         # Apply the scaling to each coordinate in the topic set
-        for vertex in self.t_vertices:
+        for vertex in t_vertices:
             vertex[0] *= scalar
             vertex[1] *= scalar
 
@@ -75,27 +73,27 @@ class Comparator:
 
         return longest
 
-    def _convert_coordinates(self):
+    def _convert_coordinates(self, t_vertices):
         # Calculate the topic center
-        self.t_center = self._calculate_center(self.t_vertices)
+        t_center = self._calculate_center(t_vertices)
 
         # Get the relative coordinates of each topic vertex to the topic center
-        for i in range(len(self.t_vertices)):
-            self.t_vertices[i][0] -= self.t_center[0]
-            self.t_vertices[i][1] -= self.t_center[1]
+        for i in range(len(t_vertices)):
+            t_vertices[i][0] -= t_center[0]
+            t_vertices[i][1] -= t_center[1]
 
         # Offset each relative coordinate by the center of the star image to
         # convert the vertices to image space
-        for i in range(len(self.t_vertices)):
-            self.t_vertices[i][0] += self.s_center[0]
-            self.t_vertices[i][1] += self.s_center[1]
+        for i in range(len(t_vertices)):
+            t_vertices[i][0] += self.s_center[0]
+            t_vertices[i][1] += self.s_center[1]
 
-    def _rotate_coordinates(self, radians=np.pi/12):
+    def _rotate_coordinates(self, t_vertices, radians=np.pi/12):
         # Rotate the topic vertices by some angle in radians, defaults to 30
         # degrees
         ox, oy = self.s_center[0], self.s_center[1]
         c, s = np.cos(radians), np.sin(radians)
-        for vertex in self.t_vertices:
+        for vertex in t_vertices:
             px, py = vertex[0], vertex[1]
             vertex[0] = c * (px - ox) - s * (py - oy) + ox
             vertex[1] = s * (px - ox) + c * (py - oy) + oy

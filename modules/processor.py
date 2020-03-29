@@ -52,10 +52,10 @@ class ImageProcessor:
                     # Get the indices of all vertices that fall within |x| <
                     # 5 or |y| < 5
                     duplicates = np.where(np.logical_or(
-                        np.logical_and(self.vertices[:, 0] < x + 5,
-                                       self.vertices[:, 0] > x - 5),
-                        np.logical_and(self.vertices[:, 1] < y + 5,
-                                       self.vertices[:, 1] > y - 5)))
+                        np.logical_and(self.vertices[:, 0] < x + 7,
+                                       self.vertices[:, 0] > x - 7),
+                        np.logical_and(self.vertices[:, 1] < y + 7,
+                                       self.vertices[:, 1] > y - 7)))
                     if len(self.vertices) == 0:
                         self.vertices = np.concatenate(
                             (self.vertices, [[x, y]]), axis=0)
