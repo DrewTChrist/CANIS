@@ -17,7 +17,7 @@ class Constellation:
         # Takes an array of edges and applies them to the graph
         self.graph.add_edges_from(edges)
 
-    def visualize(self, color='w', show_fig=True, save_fig=False, to_array=False, labels=False, size=0, center=[0, 0], t_vertices=[]):
+    def visualize(self, color='w', show_fig=True, save_fig=False, to_array=False, labels=False, size=0, center=[0, 0], t_label='', t_vertices=[]):
         # Initialize a new figure from the image and graph data
         layout = nx.spring_layout(self.graph, pos=self.nodes, fixed=self.nodes.keys())
         fig = plt.figure(1, figsize=(15, 15))
@@ -28,6 +28,7 @@ class Constellation:
         plt.margins(0, 0)
         plt.imshow(self.img)
         nx.draw_networkx(self.graph, pos=layout, with_labels=labels, node_size=size, edge_color=color)
+        plt.title(t_label)
 
         if center != [0, 0]:
             plt.plot(center[0], center[1], color='r', marker='x', markersize=20)

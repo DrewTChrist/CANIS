@@ -52,4 +52,4 @@ constellation = Constellation(ip.original, best_s_nodes)
 constellation.add_edges(best_pattern)
 
 # Plot the constellation over the original image
-constellation.visualize(color='w', save_fig=False, labels=False, size=20, t_vertices=best_vertices)
+constellation.visualize(color='w', save_fig=False, labels=False, size=20, t_label=name_gen.generate_name(), t_vertices=best_vertices)
