@@ -3,9 +3,10 @@ images that can be stored in a "knowledge-base" for the system.
 """
 import cv2 as cv2
 import numpy as np
-import scipy
+import scipy.spatial
 from datetime import datetime
 from enum import Enum
+
 
 class KnowledgeExtractor:
 
@@ -34,7 +35,7 @@ class KnowledgeExtractor:
     def thin_contours(self, step=1):
         self._convert_contours_to_vertices()
         self._remove_corner_vertices()
-        self.contours = self.contours[0:len(self.contours)-1:step]
+        self.contours = self.contours[0:len(self.contours) - 1:step]
 
     # Saves either the threshold image or the original image with the contours
     def save_image(self, image_type):
@@ -100,17 +101,17 @@ def thin_vertices(points, height, width, reduce_to=1):
     hull = _convex_hull(new_points)
     new_points = new_points[0:len(new_points):_calculate_step(len(new_points), reduce_to)]
 
-    
     for point in hull.points[np.unique(hull.simplices)]:
         p = [int(point[0]), int(point[1])]
         if p not in new_points:
             new_points.append(p)
 
-    
     return new_points
+
 
 def _convex_hull(points):
     return scipy.spatial.ConvexHull(points)
+
 
 def _remove_corner_vertices(points, height, width):
     return_points = points.copy()
@@ -125,15 +126,11 @@ def _remove_corner_vertices(points, height, width):
         if point[0] == width - 1 and point[1] == height - 1:
             corners.append(point)
 
-
     for point in corners:
         return_points.remove(point)
 
     return return_points
 
 
-
 def _calculate_step(num_points, num_points_desired):
-    return int(num_points/num_points_desired)
-
-
+    return int(num_points / num_points_desired)
