@@ -21,21 +21,19 @@ class Comparator:
     def fit(self):
         # Iterate through each topic
         for topic in self.knowledge:
-            temp = np.copy(topic.vertices)
-            self._scale_coordinates(topic.vertices)
-            self._convert_coordinates(topic.vertices)
+            temp = topic.vertices.copy()
+            self._scale_coordinates(temp)
+            self._convert_coordinates(temp)
 
             for i in range(24):
-                current = directed_hausdorff(self.s_vertices, topic.vertices)[0]
+                current = directed_hausdorff(self.s_vertices, temp)[0]
 
                 if current < self.score:
                     self.score = current
                     self.best_label = topic.label
-                    self.best_vertices = np.copy(topic.vertices)
+                    self.best_vertices = np.copy(temp)
 
-                self._rotate_coordinates(topic.vertices)
-
-            topic.vertices = temp
+                self._rotate_coordinates(temp)
 
     def _calculate_center(self, vertices):
         # Calculates the center of a set of vertices by taking the average x and

@@ -35,7 +35,7 @@ class PatternGenerator:
     def generate_pattern(self, gen_type="subset", mode="off"):
         candidate = self._mst_pattern(gen_type)
 
-        for i in range(3):
+        for i in range(2):
             if np.random.uniform(0, 1) > 0.5:
                 edge = self._get_cycle(candidate)
 
@@ -69,10 +69,7 @@ class PatternGenerator:
         # Randomly choose a subset of stars resulting in a different pattern
         # after each generation
         elif gen_type == "subset":
-            key_len = len(self.node_keys)
-            subset = list(
-                np.random.choice(range(1, key_len + 1), int(key_len / (key_len / np.random.randint(5, 10)) + 1),
-                                 replace=False))
+            subset = list(np.random.choice(range(1, len(self.node_keys)), np.random.randint(5, 15), replace=False))
             for i, j in itertools.combinations(subset, 2):
                 graph.add_edge(i, j, weight=euclidean(self.all_nodes[i], self.all_nodes[j]))
 

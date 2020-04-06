@@ -23,7 +23,8 @@ knowledge = knowledge_base()
 # Arbitrary starting score that will always be larger than compare.score
 best_score = math.inf
 
-for i in range(100):
+print("Fitting topic images")
+for i in range(1000):
     # Generate a new star pattern using the dictionary of stars
     pattern_gen = PatternGenerator(ip.s_nodes)
     pattern_gen.generate_pattern(gen_type="subset")
@@ -42,14 +43,16 @@ for i in range(100):
         print(f'{best_score} - {best_label}')
 
 # Print the final best score
-print(f'{best_score} - {best_label}')
+print(f'best - {best_score} - {best_label}')
 
 # Generate a name from the best fitting object
-name_gen = NameGenerator(best_label)
+# TODO: Investigate why name generation sometimes causes the program to hang/crash.
+#name_gen = NameGenerator(best_label)
+#constellation_name = name_gen.generate_name()
 
 # Build a new constellation instance from the generated pattern
 constellation = Constellation(ip.original, best_s_nodes)
 constellation.add_edges(best_pattern)
 
 # Plot the constellation over the original image
-constellation.visualize(color='w', save_fig=False, labels=False, size=20, t_label=name_gen.generate_name(), t_vertices=best_vertices)
+constellation.visualize(color='w', save_fig=False, labels=False, size=20, t_label=best_label, t_vertices=best_vertices)

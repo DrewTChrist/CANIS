@@ -97,14 +97,18 @@ class KnowledgeExtractor:
 
 
 def thin_vertices(points, height, width, reduce_to=1):
-    new_points = _remove_corner_vertices(points, height, width).copy()
-    hull = _convex_hull(new_points)
-    new_points = new_points[0:len(new_points):_calculate_step(len(new_points), reduce_to)]
+    points = _remove_corner_vertices(points, height, width).copy()
+    return points[0: len(points) - 1: _calculate_step(len(points), reduce_to)]
 
-    for point in hull.points[np.unique(hull.simplices)]:
-        p = [int(point[0]), int(point[1])]
-        if p not in new_points:
-            new_points.append(p)
+
+def thin_vertices_convex(points, height, width, reduce_to=1):
+    points = _remove_corner_vertices(points, height, width).copy()
+    points = points[0: len(points) - 1: _calculate_step(len(points), reduce_to)]
+    hull = _convex_hull(points)
+
+    new_points = []
+    for v in hull.vertices:
+        new_points.append(points[v])
 
     return new_points
 

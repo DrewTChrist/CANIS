@@ -34,7 +34,7 @@ class Constellation:
             plt.plot(center[0], center[1], color='r', marker='x', markersize=20)
 
         if len(t_vertices) > 0:
-            plt.plot(t_vertices[:, 0], t_vertices[:, 1], color='y', marker='o', markersize=5)
+            plt.plot(t_vertices[:, 0], t_vertices[:, 1], color='y', marker='o', markersize=4)
 
         if to_array:
             return self._plot_to_array(fig)
