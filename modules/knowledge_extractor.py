@@ -34,7 +34,7 @@ class KnowledgeExtractor:
     # Removes all edge arrays except the largest one
     # This is a temporary solution
     def thin_contours(self, step=1):
-        self._convert_contours_to_vertices()
+        self.convert_contours_to_vertices()
         self._remove_corner_vertices()
         self.contours = self.contours[0:len(self.contours) - 1:step]
 
@@ -45,6 +45,10 @@ class KnowledgeExtractor:
         elif image_type == self.ImageType.CONTOUR:
             img_with_contours = self._get_image_with_vertices()
             cv2.imwrite(f'contour-{datetime.now().strftime("%d%m%Y%H%M%S")}.png', img_with_contours)
+
+    # Method that converts the contour edges to an array of vertices
+    def convert_contours_to_vertices(self):
+        self.contours = np.vstack(self.contours).squeeze()
 
     # Returns the original image with the contours drawn over 
     # Basically deprecated   
@@ -77,10 +81,6 @@ class KnowledgeExtractor:
         for i in corners:
             self.contours = np.delete(self.contours, i - counter, axis=0)
             counter += 1
-
-    # Private method that converts the contour edges to an array of vertices
-    def _convert_contours_to_vertices(self):
-        self.contours = np.vstack(self.contours).squeeze()
 
     # Private method that converts alpha channel to white background
     def _add_white_background(self):

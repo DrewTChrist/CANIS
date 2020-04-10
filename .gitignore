@@ -15,3 +15,5 @@ saved_figures/*
 !saved_figures/.gitkeep
 src_images/*
 !src_images/.gitkeep
+topic_images/*
+!topic_images/.gitkeep

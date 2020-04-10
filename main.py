@@ -15,7 +15,7 @@ knowledge = knowledge_base()
 
 # Open a new image for processing and store the ImageProcessor object
 image_name = 'sky1.jpg'
-ip = ImageProcessor(os.path.join(os.path.curdir, './src_images/' + image_name))
+ip = ImageProcessor(os.path.join(os.path.curdir, f'./src_images/{image_name}'))
 
 # Process the image and build a labelled dictionary of each star vertex
 print('Processing source image')
@@ -59,5 +59,4 @@ constellation = Constellation(ip.original, s_nodes)
 constellation.add_edges(pattern)
 
 # Plot the constellation over the original image
-#constellation.visualize(t_label=label, t_vertices=t_vertices)
 constellation.visualize(t_label=constellation_name, t_vertices=t_vertices)
