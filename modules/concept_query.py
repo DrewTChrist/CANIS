@@ -1,11 +1,10 @@
-'''ConceptInquirer class gathers information from ConceptNet to use for name
+"""ConceptInquirer class gathers information from ConceptNet to use for name
 generation.
-'''
-
-
+"""
 import json
 import urllib.request
 from enum import Enum
+
 
 class ConceptInquirer:
 

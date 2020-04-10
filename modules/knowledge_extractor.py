@@ -1,11 +1,12 @@
 """KnowledgeExtractor class will be used to extract meaningful information from 
 images that can be stored in a "knowledge-base" for the system.
 """
+from datetime import datetime
+from enum import Enum
+
 import cv2 as cv2
 import numpy as np
 import scipy.spatial
-from datetime import datetime
-from enum import Enum
 
 
 class KnowledgeExtractor:
@@ -40,10 +41,10 @@ class KnowledgeExtractor:
     # Saves either the threshold image or the original image with the contours
     def save_image(self, image_type):
         if image_type == self.ImageType.THRESHOLD:
-            cv2.imwrite(datetime.now().strftime("%d%m%Y%H%M%S") + '_threshold.png', self.threshold)
+            cv2.imwrite(f'threshold-{datetime.now().strftime("%d%m%Y%H%M%S")}.png', self.threshold)
         elif image_type == self.ImageType.CONTOUR:
             img_with_contours = self._get_image_with_vertices()
-            cv2.imwrite(datetime.now().strftime("%d%m%Y%H%M%S") + '_contour.png', img_with_contours)
+            cv2.imwrite(f'contour-{datetime.now().strftime("%d%m%Y%H%M%S")}.png', img_with_contours)
 
     # Returns the original image with the contours drawn over 
     # Basically deprecated   

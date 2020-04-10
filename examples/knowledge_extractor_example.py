@@ -1,8 +1,9 @@
-import os, sys
-sys.path.append(os.getcwd())
+import os
+import sys
+
 from modules.knowledge_extractor import KnowledgeExtractor
 
-
+sys.path.append(os.getcwd())
 path = os.getcwd() + '\examples\\test.png'
 
 knowext = KnowledgeExtractor(path)

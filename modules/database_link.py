@@ -1,13 +1,14 @@
-import pymongo
+"""Provides an interface for connecting to a MongoDB database."""
 from getpass import getpass
-from pymongo.errors import OperationFailure, ConnectionFailure
+
+import pymongo
+from pymongo.errors import ConnectionFailure, OperationFailure
 
 
 def get_client():
     while True:
         password = getpass(prompt='Database Password: ')
-        client = pymongo.MongoClient(
-            'mongodb+srv://CANIS:' + password + '@canis-wacmf.azure.mongodb.net/test?retryWrites=true&w=majority')
+        client = pymongo.MongoClient(f'mongodb+srv://CANIS:{password}@canis-wacmf.azure.mongodb.net/test?retryWrites=true&w=majority')
 
         try:
             client.admin.command('ismaster')

@@ -5,7 +5,7 @@
 __pycache__
 venv
 .DS_Store
-knowledgebase.json
+knowledge_base.json
 
 # input/output files
 

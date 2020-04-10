@@ -1,58 +1,62 @@
 """Main driver code."""
 import math
 import os
+import time
+
 from modules.compare import Comparator
 from modules.constellation import Constellation
-from modules.generate import PatternGenerator, NameGenerator
+from modules.generate import NameGenerator, PatternGenerator
 from modules.knowledge import knowledge_base
 from modules.processor import ImageProcessor
 
-
-# Test images can be placed in the /src_images folder
-image_name = 'sky1.jpg'
-
-# Open a new image for processing and store the ImageProcessor object
-ip = ImageProcessor(os.path.join(os.path.curdir, "./src_images/" + image_name))
-
-# Process the image and build a labelled dictionary of each star vertex
-ip.process()
-
-# An array of topics for comparision - labels and vertices
+# Load an array of topics for comparision - labels and vertices
+print('Loading knowledge base')
 knowledge = knowledge_base()
 
-# Arbitrary starting score that will always be larger than compare.score
-best_score = math.inf
+# Open a new image for processing and store the ImageProcessor object
+image_name = 'sky1.jpg'
+ip = ImageProcessor(os.path.join(os.path.curdir, './src_images/' + image_name))
 
-print("Fitting topic images")
+# Process the image and build a labelled dictionary of each star vertex
+print('Processing source image')
+ip.process()
+
+# Initialize a pattern generating object
+pattern_gen = PatternGenerator(ip.s_nodes)
+
+# Arbitrary starting score that will always be larger than compare.score
+score = math.inf
+
+print('Fitting topic images')
+t0 = time.time()
 for i in range(1000):
     # Generate a new star pattern using the dictionary of stars
-    pattern_gen = PatternGenerator(ip.s_nodes)
-    pattern_gen.generate_pattern(gen_type="subset")
+    pattern_gen.generate_pattern(gen_type='subset')
 
     # Identify an object that best fits the pattern
     compare = Comparator(pattern_gen.s_vertices, knowledge)
     compare.fit()
 
     # If a better scoring configuration is found, save the configuration
-    if compare.score < best_score:
-        best_score = compare.score
-        best_s_nodes = pattern_gen.s_nodes
-        best_pattern = pattern_gen.pattern
-        best_label = compare.best_label
-        best_vertices = compare.best_vertices
-        print(f'{best_score} - {best_label}')
+    if compare.score < score:
+        score = round(compare.score, 2)
+        s_nodes = pattern_gen.s_nodes
+        pattern = pattern_gen.pattern
+        label = compare.best_label
+        t_vertices = compare.best_vertices
+        print(f'{score} - {label}')
 
 # Print the final best score
-print(f'best - {best_score} - {best_label}')
+t1 = time.time()
+print(f'best - {score} - {label} found in {round(t1 - t0, 2)} seconds')
 
 # Generate a name from the best fitting object
-# TODO: Investigate why name generation sometimes causes the program to hang/crash.
 #name_gen = NameGenerator(best_label)
 #constellation_name = name_gen.generate_name()
 
 # Build a new constellation instance from the generated pattern
-constellation = Constellation(ip.original, best_s_nodes)
-constellation.add_edges(best_pattern)
+constellation = Constellation(ip.original, s_nodes)
+constellation.add_edges(pattern)
 
 # Plot the constellation over the original image
-constellation.visualize(color='w', save_fig=False, labels=False, size=20, t_label=best_label, t_vertices=best_vertices)
+constellation.visualize(t_label=label, t_vertices=t_vertices)
