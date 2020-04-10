@@ -51,12 +51,13 @@ t1 = time.time()
 print(f'best - {score} - {label} found in {round(t1 - t0, 2)} seconds')
 
 # Generate a name from the best fitting object
-#name_gen = NameGenerator(best_label)
-#constellation_name = name_gen.generate_name()
+name_gen = NameGenerator(label)
+constellation_name = name_gen.generate_name()
 
 # Build a new constellation instance from the generated pattern
 constellation = Constellation(ip.original, s_nodes)
 constellation.add_edges(pattern)
 
 # Plot the constellation over the original image
-constellation.visualize(t_label=label, t_vertices=t_vertices)
+#constellation.visualize(t_label=label, t_vertices=t_vertices)
+constellation.visualize(t_label=constellation_name, t_vertices=t_vertices)

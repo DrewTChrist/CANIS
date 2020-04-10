@@ -117,8 +117,11 @@ class NameGenerator:
         return wn.synsets(self.hyponym)
 
     def get_hypernym(self):
-        return random.choice(
-            list(self.concept_inquirer.get_IsA_nodes(1000).keys()))
+        choices = list(self.concept_inquirer.get_IsA_nodes(1000).keys())
+        if len(choices) >= 1:
+            return random.choice(choices)
+        else:
+            return self.hyponym
 
     def get_adjective(self):
         related_to_nodes = self.concept_inquirer.get_RelatedTo_nodes(1000)
