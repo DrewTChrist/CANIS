@@ -59,4 +59,4 @@ constellation = Constellation(ip.original, s_nodes)
 constellation.add_edges(pattern)
 
 # Plot the constellation over the original image
-constellation.visualize(t_label=constellation_name, t_vertices=t_vertices)
+constellation.visualize(save_fig=True, t_label=f'Generated name: {constellation_name}')

@@ -22,6 +22,7 @@ class Constellation:
         # Initialize a new figure from the image and graph data
         layout = nx.spring_layout(self.graph, pos=self.nodes, fixed=self.node_keys)
         plt.figure(1, figsize=(15, 15))
+        plt.rcParams['axes.titlesize'] = 16
         plt.axis([0, self.img.width, 0, self.img.height])
 
         # Invert the y axis so that image coordinates are oriented properly
@@ -35,7 +36,6 @@ class Constellation:
             plt.plot(t_center[0], t_center[1], color='r', marker='x', markersize=20)
 
         if t_vertices is not None:
-            #plt.plot(*zip(*t_vertices), color='y', marker='o', markersize=4)
             t_vertices = np.array(t_vertices)
             plt.plot(t_vertices[:, 0], t_vertices[:, 1], color='y', marker='o', markersize=4)
 
