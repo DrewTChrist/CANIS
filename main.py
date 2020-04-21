@@ -29,7 +29,7 @@ score = math.inf
 
 print('Fitting topic images')
 t0 = time.time()
-for i in range(1000):
+for i in range(200):
     # Generate a new star pattern using the dictionary of stars
     pattern_gen.generate_pattern(gen_type='subset')
 

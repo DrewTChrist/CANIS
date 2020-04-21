@@ -1,10 +1,13 @@
 """Generate new star patterns and names."""
 import itertools
-import random
+import time
+from enum import Enum
 
 import networkx as nx
 import nltk
 import numpy as np
+import spacy
+import lemminflect
 from nltk.corpus import wordnet as wn
 from scipy.spatial.distance import euclidean
 
@@ -94,24 +97,46 @@ def _ccw(a, b, c):
 class NameGenerator:
 
     def __init__(self, topic):
+        print('NameGenerator class created')
         self.hyponym = topic
         self.concept_inquirer = ConceptInquirer(topic)
         self.pos_templates = [['VBG', 'NN'], ['JJ', 'NN'], ['JJ', 'VBG', 'NN']]
-        self.current_template = random.choice(self.pos_templates)
+        self.current_template = np.random.choice(self.pos_templates)
+        print("spacy.load('en_core_web_md')")
+        self.nlp = spacy.load('en_core_web_md')
 
     def generate_name(self):
-        template = random.choice(self.pos_templates)
-        name = ''
+        print('Generating name')
+        temps = [x for x in self.Templates]
+        rand_temp = np.random.choice(temps)
 
-        for pos in template:
-            if pos is 'JJ':
-                name += self.get_adjective() + ' '
-            elif pos is 'VBG':
-                name += self.get_gerund_verb() + ' '
-            elif pos is 'NN':
-                name += self.get_hypernym()
+        
+        if rand_temp == self.Templates.HYPERNYM:
+            # convert to latin
+            return self.get_hypernym()
+        elif rand_temp == self.Templates.BIGRAM:
+            # get semantically related adjective or verb
+            # add it to topic, translate to latin       randomly chose adjective or verb
+            verb_or_adj = np.random.choice(['adjective', 'verb'])
+            if verb_or_adj == 'adjective':
+                best_adjective = self.find_related_adjective(10, 0.55, 15.0)
+                return f'{best_adjective[0]} {self.hyponym}'
+            else:
+                best_verb = self.find_related_verb(10, 0.55, 15.0)
+                return f'{best_verb[0]} {self.hyponym}'
+        elif rand_temp == self.Templates.TRIGRAM:
+            if len(self.get_hypernym().split(' ')) > 1:
+                # if hypernym has two words add adjective
+                best_adjective = self.find_related_adjective(10, 0.55, 15.0)
+                return f'{best_adjective[0]} {self.hyponym}'
+            else:
+                # if hypernym has one word add adjective
+                # and add a semantically related verb
+                #translate to latin
+                best_verb = self.find_related_verb(10, 0.55, 15.0)
+                best_adjective = self.find_related_adjective(10, 0.55, 15.0)
+                return f'{best_verb[0]} {best_adjective[0]} {self.hyponym}'
 
-        return name
 
     def get_synsets(self):
         return wn.synsets(self.hyponym)
@@ -119,24 +144,67 @@ class NameGenerator:
     def get_hypernym(self):
         choices = list(self.concept_inquirer.get_IsA_nodes(1000).keys())
         if len(choices) >= 1:
-            return random.choice(choices)
+            return np.random.choice(choices)
         else:
             return self.hyponym
 
-    def get_adjective(self):
-        related_to_nodes = self.concept_inquirer.get_RelatedTo_nodes(1000)
 
-        randnode = random.choice(list(related_to_nodes.keys()))
-        while nltk.pos_tag([randnode])[0][1] != 'JJ':
-            randnode = random.choice(list(related_to_nodes.keys()))
+    def find_related_verb(self, sample_size, similarity_threshold, timeout):
+        print('Finding related verb')
+        all_wn_verbs = list(wn.all_synsets('v'))
 
-        return randnode
 
-    def get_gerund_verb(self):
-        related_to_nodes = self.concept_inquirer.get_RelatedTo_nodes(1000)
+        greatest_similarity = 0.0
+        most_similar_verb = ''
+        start_time = time.time()
 
-        randnode = random.choice(list(related_to_nodes.keys()))
-        while nltk.pos_tag([randnode])[0][1] != 'VBG':
-            randnode = random.choice(list(related_to_nodes.keys()))
+        while greatest_similarity < similarity_threshold:
+            runtime = time.time() - start_time
+            if runtime > timeout:
+                break
+            else:
+                print(f'Verb search current runtime: {runtime}')
 
-        return randnode
+            verb_sample = [x.lemmas()[0].name() for x in np.random.choice(all_wn_verbs, sample_size)]
+            tokens = self.nlp(f'{self.hyponym} ' + ' '.join(verb_sample))
+
+            for token in tokens:
+                if token and token.vector_norm and token.text != self.hyponym:
+                    if token.similarity(tokens[0]) > greatest_similarity:
+                        greatest_similarity = token.similarity(tokens[0])
+                        most_similar_verb = token
+
+        return (most_similar_verb._.inflect('VBG'), greatest_similarity)
+
+    def find_related_adjective(self, sample_size, similarity_threshold, timeout):
+        print('Finding related adjective')
+        all_wn_adjectives = list(wn.all_synsets('a'))
+
+        greatest_similarity = 0.0
+        most_similar_adj = ''
+        start_time = time.time()
+
+        while greatest_similarity < similarity_threshold:
+            runtime = time.time() - start_time
+            if runtime > timeout:
+                break
+            else:
+                print(f'Adjective search current runtime: {runtime}')
+
+
+            adj_sample = [x.lemmas()[0].name() for x in np.random.choice(all_wn_adjectives, sample_size)]
+            tokens = self.nlp(f'{self.hyponym} ' + ' '.join(adj_sample))
+
+            for token in tokens:
+                if token and token.vector_norm and token.text != self.hyponym:
+                    if token.similarity(tokens[0]) > greatest_similarity:
+                        greatest_similarity = token.similarity(tokens[0])
+                        most_similar_adj = token.text
+
+        return (most_similar_adj, greatest_similarity)
+
+
+    class Templates(Enum):
+        HYPERNYM = 1
+        BIGRAM = 2
+        TRIGRAM = 3
