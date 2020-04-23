@@ -8,17 +8,16 @@ from scipy.spatial.distance import euclidean
 
 class ImageProcessor:
 
-    def __init__(self, original, threshold=240):
+    def __init__(self, original):
         self.original = Image.open(original)
         self.processed = self.original
-        self.threshold = threshold
         self.vertices = np.empty((0, 2), dtype=int)
         self.s_nodes = {}
 
-    def process(self, save_processed_img=False):
+    def process(self, save_processed_img=False, threshold=220):
         self.processed = self.processed.convert('L')
         self.processed = self.processed.point(
-            lambda x: 0 if x < self.threshold else 255, '1')
+            lambda x: 0 if x < threshold else 255, '1')
 
         if save_processed_img:
             self.processed.save(f'saved_figures/processed-{datetime.now().strftime("%d%m%Y%H%M%S")}.jpg')

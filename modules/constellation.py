@@ -29,7 +29,7 @@ class Constellation:
         plt.gca().invert_yaxis()
         plt.margins(0, 0)
         plt.imshow(self.img)
-        nx.draw_networkx(self.graph, pos=layout, with_labels=labels, node_size=size, edge_color='w')
+        nx.draw_networkx(self.graph, pos=layout, with_labels=labels, node_size=size, edge_color='w', width=0.5)
         plt.title(t_label)
 
         if t_center is not None:

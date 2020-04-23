@@ -50,14 +50,14 @@ class PatternGenerator:
 
         # Utilize the full set of stars resulting in the same pattern after
         # each generation for a given image
-        if gen_type is 'full':
+        if gen_type == 'full':
             for i, j in itertools.combinations(self.node_keys, 2):
                 graph.add_edge(i, j, weight=euclidean(self.nodes[i], self.nodes[j]))
 
         # Randomly choose a subset of stars resulting in a different pattern
         # after each generation
-        elif gen_type is 'subset':
-            subset = np.random.choice(range(1, len(self.node_keys)), np.random.randint(5, 12), replace=False)
+        elif gen_type == 'subset':
+            subset = np.random.choice(range(1, len(self.node_keys)), np.random.randint(7, 15), replace=False)
             for i, j in itertools.combinations(subset, 2):
                 graph.add_edge(i, j, weight=euclidean(self.nodes[i], self.nodes[j]))
 
@@ -110,7 +110,6 @@ class NameGenerator:
         temps = [x for x in self.Templates]
         rand_temp = np.random.choice(temps)
 
-        
         if rand_temp == self.Templates.HYPERNYM:
             # convert to latin
             return self.get_hypernym()
@@ -132,11 +131,10 @@ class NameGenerator:
             else:
                 # if hypernym has one word add adjective
                 # and add a semantically related verb
-                #translate to latin
+                # translate to latin
                 best_verb = self.find_related_verb(10, 0.55, 15.0)
                 best_adjective = self.find_related_adjective(10, 0.55, 15.0)
                 return f'{best_verb[0]} {best_adjective[0]} {self.hyponym}'
-
 
     def get_synsets(self):
         return wn.synsets(self.hyponym)
@@ -148,11 +146,9 @@ class NameGenerator:
         else:
             return self.hyponym
 
-
     def find_related_verb(self, sample_size, similarity_threshold, timeout):
         print('Finding related verb')
         all_wn_verbs = list(wn.all_synsets('v'))
-
 
         greatest_similarity = 0.0
         most_similar_verb = ''
@@ -174,7 +170,7 @@ class NameGenerator:
                         greatest_similarity = token.similarity(tokens[0])
                         most_similar_verb = token
 
-        return (most_similar_verb._.inflect('VBG'), greatest_similarity)
+        return most_similar_verb._.inflect('VBG'), greatest_similarity
 
     def find_related_adjective(self, sample_size, similarity_threshold, timeout):
         print('Finding related adjective')
@@ -191,7 +187,6 @@ class NameGenerator:
             else:
                 print(f'Adjective search current runtime: {runtime}')
 
-
             adj_sample = [x.lemmas()[0].name() for x in np.random.choice(all_wn_adjectives, sample_size)]
             tokens = self.nlp(f'{self.hyponym} ' + ' '.join(adj_sample))
 
@@ -201,8 +196,7 @@ class NameGenerator:
                         greatest_similarity = token.similarity(tokens[0])
                         most_similar_adj = token.text
 
-        return (most_similar_adj, greatest_similarity)
-
+        return most_similar_adj, greatest_similarity
 
     class Templates(Enum):
         HYPERNYM = 1
