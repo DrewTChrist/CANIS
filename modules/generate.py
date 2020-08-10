@@ -134,7 +134,7 @@ class NameGenerator:
                 # translate to latin
                 best_verb = self.find_related_verb(10, 0.55, 15.0)
                 best_adjective = self.find_related_adjective(10, 0.55, 15.0)
-                return f'{best_verb[0]} {best_adjective[0]} {self.hyponym}'
+                return f'{best_adjective[0]} {best_verb[0]} {self.hyponym}'
 
     def get_synsets(self):
         return wn.synsets(self.hyponym)
