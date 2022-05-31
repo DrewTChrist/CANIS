@@ -1,7 +1,7 @@
 lemminflect==0.2.1
 matplotlib==3.1.3
 networkx==2.4
-nltk==3.4.5
+nltk==3.6.6
 https://raw.githubusercontent.com/nltk/nltk_data/gh-pages/packages/corpora/wordnet.zip
 numpy==1.18.1
 opencv-python==4.2.0.32
