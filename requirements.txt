@@ -5,7 +5,7 @@ nltk==3.6.6
 https://raw.githubusercontent.com/nltk/nltk_data/gh-pages/packages/corpora/wordnet.zip
 numpy==1.21.0
 opencv-python==4.2.0.32
-Pillow==9.0.1
+Pillow==9.3.0
 pymongo==3.10.1
 scipy==1.4.1
 spacy==2.2.4
