@@ -7,6 +7,6 @@ numpy==1.21.0
 opencv-python==4.2.0.32
 Pillow==9.0.1
 pymongo==3.10.1
-scipy==1.4.1
+scipy==1.10.0
 spacy==2.2.4
 https://github.com/explosion/spacy-models/releases/download/en_core_web_md-2.2.5/en_core_web_md-2.2.5.tar.gz#egg=en_core_web_md
